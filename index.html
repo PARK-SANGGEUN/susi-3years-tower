@@ -71,7 +71,6 @@
     .badge-blue   { background: linear-gradient(90deg,#6bc5ff,#8c7bff); color:#fff; }
     .badge-gray   { background: rgba(255,255,255,0.85); color:#444; }
 
-    /* 검색 카드 */
     .card {
       background: rgba(255,255,255,0.95);
       border-radius: 18px;
@@ -190,7 +189,6 @@
       line-height: 1.5;
     }
 
-    /* 결과 영역 */
     #currentResult {
       margin-top: 4px;
     }
@@ -241,7 +239,6 @@
       font-weight: 800;
     }
 
-    /* 온도계 스타일 */
     .thermo-wrapper {
       display:flex;
       gap:14px;
@@ -287,12 +284,6 @@
       margin-top:4px;
       font-size:12px;
       font-weight:800;
-    }
-
-    .compare-section-title {
-      font-size: 15px;
-      font-weight: 900;
-      margin-bottom: 6px;
     }
 
     .compare-item {
@@ -369,7 +360,6 @@
       <span class="badge badge-gray">검색 결과 1개 + 비교 추가 목록(최대 3개) 누적</span>
     </div>
 
-    <!-- 검색 카드 -->
     <div class="card">
       <div class="card-header">
         <span class="num">1</span> 검색 기준 선택 (한 줄 검색 행)
@@ -410,7 +400,6 @@
       </div>
     </div>
 
-    <!-- 현재 선택 결과 -->
     <div class="card">
       <div class="card-header">
         <span class="num">2</span> 현재 선택 1개 전형의 3개년 결과
@@ -424,7 +413,6 @@
       </div>
     </div>
 
-    <!-- 비교 목록 -->
     <div class="card">
       <div class="card-header">
         <span class="num">3</span> 선택 비교 목록 (최대 3개까지 누적)
@@ -438,10 +426,9 @@
   </div>
 
   <script>
-    // ===== 기본 데이터 세팅 =====
     const YEARS = [2025, 2024, 2023];
     let DATA = [];
-    let compareSelections = [];  // {univ, major, type, detail}
+    let compareSelections = [];
 
     const univSelect   = document.getElementById("univSelect");
     const majorSelect  = document.getElementById("majorSelect");
@@ -456,9 +443,16 @@
       return [...new Set(arr)].sort((a,b)=>a.localeCompare(b,"ko"));
     }
 
-    function coerceNumbers(row) {
-      // 숫자로 쓸 컬럼들을 숫자로 변환
-      ["연도","50% cut","70% cut"].forEach(key=>{
+    function extractYear(value) {
+      const s = String(value ?? "");
+      const m = s.match(/(\d{4})/);
+      return m ? Number(m[1]) : null;
+    }
+
+    function normalizeRow(row) {
+      row._year = extractYear(row["연도"]);
+
+      ["50% cut","70% cut"].forEach(key=>{
         if (row[key] !== undefined && row[key] !== null && row[key] !== "") {
           const n = Number(row[key]);
           if (!Number.isNaN(n)) row[key] = n;
@@ -471,7 +465,7 @@
         const res = await fetch("data/data.json");
         const raw = await res.json();
         DATA = raw || [];
-        DATA.forEach(coerceNumbers);
+        DATA.forEach(normalizeRow);
         initUnivSelect();
       } catch (e) {
         console.error(e);
@@ -510,7 +504,6 @@
       sel.appendChild(opt);
     }
 
-    // ===== 선택 체인 =====
     function handleUnivChange() {
       const univ = univSelect.value;
       disableSelect(majorSelect, "대학을 먼저 선택하세요");
@@ -572,13 +565,12 @@
       };
     }
 
-    // ===== 결과 데이터 추출 =====
     function getRowsForSelection(sel) {
       if (!sel) return null;
       const byYear = {};
       YEARS.forEach(y => {
         const row = DATA.find(r =>
-          Number(r["연도"]) === y &&
+          r._year === y &&
           r["대학명"] === sel.univ &&
           r["모집단위"] === sel.major &&
           r["중심전형"] === sel.type &&
@@ -589,7 +581,6 @@
       return byYear;
     }
 
-    // ===== 온도계 DOM 생성 =====
     function createThermoBlock(rowsByYear) {
       const wrapper = document.createElement("div");
       wrapper.className = "thermo-wrapper";
@@ -616,7 +607,6 @@
         let text = "데이터 없음";
 
         if (v !== null) {
-          // 난이도: 1등급에 가까울수록 높게 보이도록 (1 → 100, 9 → ~10)
           heightPercent = (10 - v) / 9 * 100;
           if (heightPercent < 8) heightPercent = 8;
           if (heightPercent > 100) heightPercent = 100;
@@ -635,7 +625,6 @@
         value.textContent = text;
         col.appendChild(value);
 
-        // 애니메이션
         setTimeout(() => {
           fill.style.height = heightPercent + "%";
         }, 30);
@@ -646,7 +635,6 @@
       return wrapper;
     }
 
-    // ===== 3개년 표 DOM 생성 =====
     function createTableBlock(rowsByYear) {
       const table = document.createElement("table");
       table.className = "result-table";
@@ -684,7 +672,6 @@
       return table;
     }
 
-    // ===== 공통 결과 블록 생성 =====
     function createResultBlock(selection, rowsByYear) {
       const container = document.createElement("div");
 
@@ -720,7 +707,6 @@
       return container;
     }
 
-    // ===== 현재 선택 결과 렌더링 =====
     function renderCurrentResult(selection) {
       currentResultBox.innerHTML = "";
       if (!selection) {
@@ -747,7 +733,6 @@
       currentResultBox.appendChild(createResultBlock(selection, rowsByYear));
     }
 
-    // ===== 비교 목록 렌더링 =====
     function renderCompareList() {
       compareListBox.innerHTML = "";
       if (compareSelections.length === 0) {
@@ -802,7 +787,6 @@
       });
     }
 
-    // ===== 버튼 이벤트 =====
     addCompareBtn.addEventListener("click", function () {
       const univ = univSelect.value;
       const major = majorSelect.value;
@@ -820,7 +804,6 @@
 
       const selection = { univ, major, type, detail };
 
-      // 중복 방지 (같은 전형이면 추가하지 않음)
       const exists = compareSelections.some(s =>
         s.univ === univ && s.major === major && s.type === type && s.detail === detail
       );
@@ -839,7 +822,6 @@
       renderCurrentResult(null);
     });
 
-    // ===== 초기 로드 =====
     loadData();
     renderCompareList();
   </script>
