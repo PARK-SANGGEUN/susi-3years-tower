@@ -256,34 +256,44 @@
       margin-bottom:4px;
     }
     .thermo-shell {
-      height:130px;
-      padding:4px;
-      border-radius:999px;
-      background:linear-gradient(180deg,#ffffff,#ffe9df);
-      border:2px solid rgba(255,255,255,0.9);
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.06);
-      position:relative;
-      overflow:hidden;
+      height: 160px;
+  padding: 4px;
+  border-radius: 40px;
+  background: linear-gradient(180deg, #ffffff, #ffe6d9);
+  border: 2px solid rgba(255,255,255,0.9);
+  position: relative;
+  overflow: visible;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.08)
     }
+    .thermo-bulb {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ff8c6a, #ff3e73);
+  box-shadow: 0 8px 14px rgba(255, 60, 80, 0.5);
+}
     .thermo-fill {
-      position:absolute;
-      left:4px;
-      right:4px;
-      bottom:4px;
-      border-radius:999px;
-      height:0;
-      background:linear-gradient(180deg,#ff5f6d,#ffc371);
-      box-shadow:0 6px 16px rgba(255,120,80,0.55);
-      transition:height .7s ease;
+       position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 20px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, #ff4d6d, #ffb76b);
+  box-shadow: 0 6px 16px rgba(255,120,80,0.55);
+  transition: height .7s ease;
     }
     .thermo-fill.level-easy {
-      background:linear-gradient(180deg,#6bdc7e,#c9ff9b);
-      box-shadow:0 6px 14px rgba(60,180,80,0.45);
+      background: linear-gradient(180deg,#33dd77,#bbff88);
+  box-shadow:0 6px 14px rgba(60,180,80,0.45);
     }
     .thermo-value {
-      margin-top:4px;
-      font-size:12px;
-      font-weight:800;
+       font-size: 16px;
+  font-weight: 900;
+  margin-top: 10px;
     }
 
     .compare-item {
@@ -581,96 +591,110 @@
       return byYear;
     }
 
-    function createThermoBlock(rowsByYear) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "thermo-wrapper";
+function createThermoBlock(rowsByYear) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "thermo-wrapper";
 
-      YEARS.forEach(year => {
-        const col = document.createElement("div");
-        col.className = "thermo-col";
+  YEARS.forEach(year => {
+    const col = document.createElement("div");
+    col.className = "thermo-col";
 
-        const label = document.createElement("div");
-        label.className = "thermo-year";
-        label.textContent = year + "학년도";
-        col.appendChild(label);
+    if (year === 2025) col.classList.add("year-2025");
 
-        const shell = document.createElement("div");
-        shell.className = "thermo-shell";
+    const label = document.createElement("div");
+    label.className = "thermo-year";
+    label.textContent = year + "학년도";
+    col.appendChild(label);
 
-        const fill = document.createElement("div");
-        fill.className = "thermo-fill";
+    const shell = document.createElement("div");
+    shell.className = "thermo-shell";
 
-        const row = rowsByYear[year];
-        const v = row && typeof row["70% cut"] === "number" ? row["70% cut"] : null;
+    const bulb = document.createElement("div");
+    bulb.className = "thermo-bulb";
 
-        let heightPercent = 0;
-        let text = "데이터 없음";
+    const fill = document.createElement("div");
+    fill.className = "thermo-fill";
 
-        if (v !== null) {
-          heightPercent = (10 - v) / 9 * 100;
-          if (heightPercent < 8) heightPercent = 8;
-          if (heightPercent > 100) heightPercent = 100;
-          text = v.toFixed(2) + "등급";
+    const row = rowsByYear[year];
+    const v = row && typeof row["70% cut"] === "number" ? row["70% cut"] : null;
 
-          if (v >= 4.0) {
-            fill.classList.add("level-easy");
-          }
-        }
+    let heightPercent = 0;
+    let text = "데이터 없음";
 
-        shell.appendChild(fill);
-        col.appendChild(shell);
+    if (v !== null) {
+      heightPercent = (10 - v) / 9 * 100;
+      if (heightPercent < 8) heightPercent = 8;
+      if (heightPercent > 100) heightPercent = 100;
 
-        const value = document.createElement("div");
-        value.className = "thermo-value";
-        value.textContent = text;
-        col.appendChild(value);
+      text = v.toFixed(2) + "등급";
 
-        setTimeout(() => {
-          fill.style.height = heightPercent + "%";
-        }, 30);
+      if (v >= 4.0) fill.classList.add("level-easy");
+    }
 
-        wrapper.appendChild(col);
-      });
+    shell.appendChild(fill);
+    shell.appendChild(bulb);
+    col.appendChild(shell);
 
-      return wrapper;
+    const value = document.createElement("div");
+    value.className = "thermo-value";
+    value.textContent = text;
+    col.appendChild(value);
+
+    setTimeout(() => {
+      fill.style.height = heightPercent + "%";
+    }, 30);
+
+    wrapper.appendChild(col);
+  });
+
+  return wrapper;
     }
 
     function createTableBlock(rowsByYear) {
-      const table = document.createElement("table");
-      table.className = "result-table";
+  const table = document.createElement("table");
+  table.className = "result-table highlight-2025";
 
-      const headerRow = document.createElement("tr");
-      ["연도","50% cut","70% cut"].forEach(h => {
-        const th = document.createElement("th");
-        th.textContent = h;
-        headerRow.appendChild(th);
-      });
-      table.appendChild(headerRow);
+  const headerRow = document.createElement("tr");
+  ["연도","50% cut","70% cut","모집인원","경쟁률","충원율"].forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    table.appendChild(headerRow);
+    headerRow.appendChild(th);
+  });
 
-      YEARS.forEach(y => {
-        const tr = document.createElement("tr");
-        const row = rowsByYear[y];
+  YEARS.forEach(y => {
+    const tr = document.createElement("tr");
+    if (y === 2025) tr.classList.add("highlight-2025");
 
-        const tdYear = document.createElement("td");
-        tdYear.textContent = y;
-        tr.appendChild(tdYear);
+    const row = rowsByYear[y];
 
-        const c50 = row && row["50% cut"] != null ? row["50% cut"] : "-";
-        const c70 = row && row["70% cut"] != null ? row["70% cut"] : "-";
-
-        const td50 = document.createElement("td");
-        td50.textContent = typeof c50 === "number" ? c50.toFixed(2) : c50;
-        tr.appendChild(td50);
-
-        const td70 = document.createElement("td");
-        td70.textContent = typeof c70 === "number" ? c70.toFixed(2) : c70;
-        tr.appendChild(td70);
-
-        table.appendChild(tr);
-      });
-
-      return table;
+    function getVal(key) {
+      if (!row || row[key] == null || row[key] === "") return "-";
+      return row[key];
     }
+
+    const fields = [
+      y,
+      getVal("50% cut"),
+      getVal("70% cut"),
+      getVal("모집인원"),
+      getVal("경쟁률"),
+      getVal("충원율")
+    ];
+
+    fields.forEach(v=>{
+      const td = document.createElement("td");
+      td.textContent = v;
+      td.style.fontWeight = "800";
+      td.style.fontSize = "13px";
+      tr.appendChild(td);
+    });
+
+    table.appendChild(tr);
+  });
+
+  return table;
+}
 
     function createResultBlock(selection, rowsByYear) {
       const container = document.createElement("div");
@@ -827,3 +851,4 @@
   </script>
 </body>
 </html>
+
