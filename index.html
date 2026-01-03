@@ -3,199 +3,190 @@
 <head>
 <meta charset="UTF-8" />
 <title>모두의 수시 3개년 입시결과 비교 온도계</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{box-sizing:border-box}
-
 body{
- margin:0;
- font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
- background:linear-gradient(180deg,#ffe4cf,#fef2ff,#e9f6ff);
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+background:linear-gradient(180deg,#ffe4cf,#fdefff,#e8f5ff);
 }
 
-/* ===== 페이지 컨테이너 ===== */
+/* 전체 컨테이너 */
 .page{
- max-width:1200px;
- margin:0 auto;
- padding:14px 12px 60px;
+max-width:1200px;
+margin:0 auto;
+padding:10px 10px 60px;
 }
 
-/* ===== 제목 ===== */
 h1{
- font-size:28px;
- font-weight:900;
- margin:6px 0 2px;
-}
-.sub{
- font-size:14px;
- font-weight:700;
-}
-.meta{
- font-size:13px;
- font-weight:800;
+font-size:28px;
+font-weight:900;
+margin:8px 0 4px;
 }
 
-/* 강조 */
-strong.highlight2025{
- background:#fff3c4;
- padding:2px 4px;
- border-radius:6px;
+/* ================== 검색창 카드 ================== */
+
+.search-card{
+background:white;
+border-radius:18px;
+padding:18px;
+box-shadow:0 10px 35px rgba(0,0,0,.09);
+margin-top:10px;
 }
 
-/* ===== 카드 공통 ===== */
-.card{
- background:rgba(255,255,255,0.95);
- border-radius:18px;
- padding:14px 16px 18px;
- margin-top:12px;
- box-shadow:0 12px 35px rgba(0,0,0,.10);
-}
-
-/* 현재 선택 카드 */
-.card-current{
- border-left:10px solid #ff7b61;
-}
-
-/* 비교 카드 */
-.card-compare{
- border-left:10px solid #6b9fff;
-}
-
-/* ===== 검색 영역 ===== */
-.field label{
- font-size:13px;
- font-weight:900;
+/* 검색 select + button */
+.search-row{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
 }
 
 select{
- width:100%;
- padding:14px 14px;
- font-size:16px;
- font-weight:800;
- border-radius:14px;
- border:2px solid #ffb48b;
+flex:1;
+padding:14px 14px;
+font-size:16px;
+font-weight:900;
+border-radius:14px;
+border:2px solid #ffc2a1;
+background:#fffdfb;
 }
 
-/* 모바일 터치 크게 */
-@media(max-width:640px){
- select{font-size:18px;padding:16px}
- button{font-size:18px}
-}
-
-/* 버튼 */
 button{
- border:none;
- border-radius:14px;
- padding:12px 16px;
- font-size:14px;
- font-weight:900;
- cursor:pointer;
+padding:14px 18px;
+font-size:15px;
+font-weight:900;
+border-radius:14px;
+border:none;
+cursor:pointer;
 }
-.btn-main{background:linear-gradient(120deg,#ff7b5c,#ff3c7d);color:white}
-.btn-sub{background:white}
 
-/* ===== thermometer ===== */
+.btn-main{background:linear-gradient(120deg,#ff7b61,#ff3d7a);color:white}
+.btn-sub{background:white;color:#444;border:2px solid #eee}
 
-.thermo-area{
- display:flex;
- gap:18px;
- margin-top:10px;
+/* ================== 카드 구분 ================== */
+.card-current{
+background:white;
+padding:14px 16px;
+border-radius:16px;
+box-shadow:0 8px 28px rgba(255,100,120,.25);
+border-left:10px solid #ff6070;
+margin-top:12px;
+}
+
+.card-compare{
+background:white;
+padding:14px 16px;
+border-radius:16px;
+box-shadow:0 8px 28px rgba(90,140,255,.25);
+border-left:10px solid #6c8dff;
+margin-top:12px;
+}
+
+/* ================= thermometer ================== */
+
+.thermo-box{
+display:flex;
+gap:16px;
+margin-top:6px;
 }
 
 .thermo-col{
- flex:1;
- text-align:center;
- font-weight:900;
+flex:1;
+text-align:center;
+font-weight:900;
 }
 
-/* thermometer structure */
-.thermo-body{
- width:60px;
- height:180px;
- border-radius:30px;
- margin:0 auto;
- background:linear-gradient(180deg,#ffffff,#ffe9dc);
- box-shadow:inset 0 0 10px rgba(0,0,0,0.15);
- position:relative;
+/* thermometer body */
+.thermo{
+width:70px;
+height:180px;
+margin:0 auto;
+position:relative;
 }
 
 /* tube */
-.thermo-tube{
- position:absolute;
- left:50%;
- transform:translateX(-50%);
- bottom:28px;
- width:18px;
- height:130px;
- border-radius:14px;
- background:#eef3ff;
- box-shadow:inset 0 0 6px rgba(0,0,0,.3);
- overflow:hidden;
+.tube{
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+bottom:28px;
+width:18px;
+height:130px;
+border-radius:14px;
+background:#eef3ff;
+box-shadow:inset 0 0 6px rgba(0,0,0,.35);
+overflow:hidden;
 }
 
-/* fill */
-.thermo-fill{
- position:absolute;
- bottom:0;
- left:0;
- width:100%;
- border-radius:14px;
- transition:height .9s ease;
+/* thermometer fill */
+.fill{
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+border-radius:14px;
+transition:height .6s ease;
 }
 
-/* bottom bulb */
-.thermo-bulb{
- position:absolute;
- width:42px;
- height:42px;
- border-radius:50%;
- bottom:-4px;
- left:50%;
- transform:translateX(-50%);
+/* bulb */
+.bulb{
+position:absolute;
+width:34px;
+height:34px;
+border-radius:50%;
+bottom:-1px;
+left:50%;
+transform:translateX(-50%);
 }
 
-/* tick marks */
-.thermo-scale{
- position:absolute;
- left:50%;
- top:12px;
- width:90px;
- transform:translateX(-50%);
- font-size:10px;
- color:#333;
+/* tick labels */
+.scale{
+position:absolute;
+top:6px;
+right:-34px;
+font-size:11px;
+line-height:1.1;
 }
 
-/* ===== 표 ===== */
+/* ================= table ================= */
 
 table{
- width:100%;
- border-collapse:collapse;
- margin-top:8px;
- font-size:13px;
+width:100%;
+border-collapse:collapse;
+margin-top:8px;
+font-size:13px;
 }
+
 th,td{
- text-align:center;
- padding:6px;
- border-bottom:1px solid #eee;
- border-right:1px solid #eee;
+padding:6px;
+text-align:center;
+border-bottom:1px solid #eee;
 }
+
 th{
- background:#fff3ea;
- font-weight:900;
+background:#fff3ea;
+font-weight:900;
 }
 
-/* 2025 강조 */
+/* 2025 strong highlight */
 tr.year2025{
- background:#fffbe2;
- font-weight:900;
+background:#fffbe1;
+font-weight:900;
 }
 
-/* 상승하락 */
-span.up{color:#d63031;font-weight:900}
-span.down{color:#0984e3;font-weight:900}
-</style>
+/* arrow */
+.up{color:#e74c3c;font-weight:900}
+.down{color:#2980b9;font-weight:900}
 
+/* ================= mobile ================= */
+@media(max-width:640px){
+select{font-size:18px;padding:16px}
+button{font-size:18px}
+.thermo{transform:scale(.9)}
+}
+</style>
 </head>
 
 <body>
@@ -203,47 +194,28 @@ span.down{color:#0984e3;font-weight:900}
 <div class="page">
 
 <h1>모두의 수시 3개년 입시결과 비교 온도계</h1>
-<div class="sub">대학·모집단위·전형유형·세부전형 선택 후 3개년 70%cut을 비교하세요</div>
-<div class="meta">Copyright <strong>@All Teachers</strong></div>
-<div class="meta">출처 3개년 어디가 수시 입시결과</div>
+<div>대학교 · 모집단위 · 전형유형 · 세부전형 선택 후 비교</div>
+<div><b>Copyright @All Teachers</b></div>
+<div>출처 3개년 어디가 수시 입시결과</div>
 
-<!-- ===== 검색 카드 ===== -->
-<div class="card">
-<div><b>검색 기준 선택</b></div>
-
-<div class="field">
-<label>대학 선택</label>
+<!-- 검색 -->
+<div class="search-card">
+<div class="search-row">
 <select id="univ"></select>
-</div>
-
-<div class="field">
-<label>모집단위 선택</label>
 <select id="major" disabled></select>
-</div>
-
-<div class="field">
-<label>전형유형 선택</label>
 <select id="type" disabled></select>
-</div>
-
-<div class="field">
-<label>세부전형 선택</label>
 <select id="detail" disabled></select>
-</div>
-
 <button id="btnAdd" class="btn-main">비교 추가</button>
 <button id="btnReset" class="btn-sub">초기화</button>
-
+</div>
 </div>
 
-<!-- ===== 현재 선택 결과 ===== -->
-<div class="card card-current" id="currentBox">
-현재 선택된 전형이 없습니다
+<div id="currentBox" class="card-current">
+현재 선택된 전형이 없습니다.
 </div>
 
-<!-- ===== 비교 목록 ===== -->
-<div class="card card-compare" id="compareBox">
-비교 목록이 비어 있습니다
+<div id="compareBox" class="card-compare">
+비교 목록이 비어 있습니다.
 </div>
 
 </div>
@@ -253,51 +225,42 @@ const YEARS=[2025,2024,2023];
 let DATA=[];
 let compare=[];
 
-/********* 데이터 로드 **********/
+/* ========== load json faster (mobile optimized) ========= */
 async function load(){
- const res=await fetch("data/data.json");
- DATA=await res.json();
- DATA.forEach(r=>r._year=parseInt(r["연도"]));
+ const r=await fetch("data/data.json");
+ DATA=await r.json();
+ DATA.forEach(d=>d._year=parseInt(d["연도"]));
  initUniv();
 }
-function unique(a){return [...new Set(a)].sort((a,b)=>a.localeCompare(b,"ko"))}
 
-/********* 셀렉트 초기화 **********/
-function initUniv(){
- let u=unique(DATA.map(r=>r["대학명"]));
- fill(univ,u,"대학 선택");
- univ.disabled=false;
-}
-function fill(sel,items,title){
- sel.innerHTML="";
- let o=document.createElement("option");
- o.textContent=title;o.value="";
- sel.appendChild(o);
- items.forEach(v=>{
-  let x=document.createElement("option");
-  x.value=v;x.textContent=v;
-  sel.appendChild(x);
+/* fill select */
+function unique(a){return [...new Set(a)].sort((a,b)=>a.localeCompare(b,"ko"))}
+function fill(sel,list,title){
+ sel.innerHTML=`<option value="">${title}</option>`;
+ list.forEach(v=>{
+  sel.innerHTML+=`<option value="${v}">${v}</option>`;
  });
 }
 
-/********* 이벤트 연결 **********/
+/* selects */
 const univ=document.getElementById("univ");
 const major=document.getElementById("major");
 const type=document.getElementById("type");
 const detail=document.getElementById("detail");
-const currentBox=document.getElementById("currentBox");
-const compareBox=document.getElementById("compareBox");
+
+function initUniv(){
+ fill(univ,unique(DATA.map(r=>r["대학명"])),"대학 선택");
+}
 
 univ.onchange=()=>{
  const f=DATA.filter(r=>r["대학명"]===univ.value);
  fill(major,unique(f.map(r=>r["모집단위"])),"모집단위 선택");
  major.disabled=false;
- type.disabled=true;detail.disabled=true;
 }
 
 major.onchange=()=>{
  const f=DATA.filter(r=>r["대학명"]===univ.value && r["모집단위"]===major.value);
- fill(type,unique(f.map(r=>r["중심전형"])),"전형유형 선택");
+ fill(type,unique(f.map(r=>r["중심전형"])),"전형 선택");
  type.disabled=false;
 }
 
@@ -307,12 +270,10 @@ type.onchange=()=>{
  detail.disabled=false;
 }
 
-detail.onchange=()=>{
- renderCurrent();
-}
+detail.onchange=()=>renderCurrent();
 
-/********* 현재 선택 출력 **********/
-function rows(sel){
+/* get rows by year */
+function rows(){
  let by={};
  YEARS.forEach(y=>{
   by[y]=DATA.find(r=>
@@ -326,123 +287,118 @@ function rows(sel){
  return by;
 }
 
-function renderCurrent(){
- if(!detail.value){currentBox.innerHTML="현재 선택된 전형이 없습니다";return;}
- const r=rows();
- currentBox.innerHTML="";
- currentBox.appendChild(makeBlock(r,{
-  univ:univ.value,
-  major:major.value,
-  type:type.value,
-  detail:detail.value
- }));
+/* arrow up down */
+function arrow(prev,val){
+ if(prev==null||val==null) return "";
+ return val<prev?`<span class="up">▲</span>`:`<span class="down">▼</span>`;
 }
 
-/********* 비교 목록 **********/
-btnAdd.onclick=()=>{
- if(!detail.value)return alert("전형을 모두 선택하세요");
- if(compare.length>=3)return alert("최대 3개");
- compare.push({
-  univ:univ.value,major:major.value,type:type.value,detail:detail.value
- });
- renderCompare();
-}
-
-btnReset.onclick=()=>{
- location.reload();
-}
-
-function renderCompare(){
- compareBox.innerHTML="";
- compare.forEach((s,i)=>{
-  const r=rows(s);
-  const div=document.createElement("div");
-  div.appendChild(makeBlock(r,s));
-  compareBox.appendChild(div);
- });
-}
-
-/********* 상승/하락 표시 **********/
-function arrow(prev,cur){
- if(prev==null||cur==null)return "";
- return cur<prev?`<span class='up'>▲</span>`:`<span class='down'>▼</span>`;
-}
-
-/********* thermometer + table block **********/
-function makeBlock(r,s){
- const wrap=document.createElement("div");
-
- /* 제목 */
- let t=document.createElement("div");
- t.innerHTML=`<b>${s.univ} / ${s.major}</b> <br>[${s.type}] ${s.detail}`;
- wrap.appendChild(t);
-
- /* thermometer area */
- const thermo=document.createElement("div");
- thermo.className="thermo-area";
+/* thermometer block */
+function thermoBlock(by){
+ const box=document.createElement("div");
+ box.className="thermo-box";
 
  YEARS.forEach(y=>{
-  let col=document.createElement("div");
-  col.className="thermo-col";
-  let row=r[y];
-  let v=row?Number(row["70% cut"]):null;
+  const r=by[y];
+  const v=r?Number(r["70% cut"]):null;
 
-  /* 색 결정 */
-  let c="#88ff99";
-  if(v<=2)c="#ff3b3b";
+  /* 색깔 그라데이션 */
+  let c="#8bf7ce";
+  if(v<=2)c="#ff4b4b";
   else if(v<=3)c="#ff944d";
-  else if(v<=4)c="#ffd93b";
-  else c="#8bf7ce";
+  else if(v<=4)c="#ffd93a";
 
-  col.innerHTML=`
-   <div>${y}학년도</div>
-   <div class="thermo-body">
-    <div class="thermo-scale">1 2 3 4 5 6</div>
-    <div class="thermo-tube">
-     <div class="thermo-fill" style="background:${c};height:${v?((10-v)/9*100):5}%"></div>
+  let h=v?((10-v)/9*100):5;
+
+  box.innerHTML+=`
+  <div class="thermo-col">
+    <div>${y}학년도</div>
+    <div class="thermo">
+      <div class="tube">
+        <div class="fill" style="background:${c};height:${h}%"></div>
+      </div>
+      <div class="bulb" style="background:${c}"></div>
+      <div style="font-size:15px">${v?v.toFixed(2)+"등급":"-"}</div>
     </div>
-    <div class="thermo-bulb" style="background:${c}"></div>
-   </div>
-   <div style="font-size:15px;font-weight:900">${v?v.toFixed(2)+"등급":"-"}</div>
+  </div>
   `;
-  thermo.appendChild(col);
  });
- wrap.appendChild(thermo);
 
- /* table */
- let table=document.createElement("table");
+ return box;
+}
 
- table.innerHTML=`
+/* table block */
+function tableBlock(by){
+ let t=document.createElement("table");
+ t.innerHTML=`
  <tr>
-  <th>연도</th>
-  <th>50% cut</th>
-  <th>70% cut</th>
-  <th>모집인원</th>
-  <th>경쟁률</th>
-  <th>충원순위</th>
+  <th>연도</th><th>50% cut</th><th>70% cut</th><th>모집인원</th><th>경쟁률</th><th>충원순위</th>
  </tr>
  `;
 
  YEARS.forEach((y,i)=>{
-  let row=r[y];
-  let prev=i===0?null:r[YEARS[i-1]];
-  table.innerHTML+=`
+  const r=by[y];
+  const prev=i===0?null:by[YEARS[i-1]];
+  t.innerHTML+=`
   <tr class="${y===2025?"year2025":""}">
-   <td>${y}</td>
-   <td>${row?row["50% cut"]:"-"}</td>
-   <td>${row?row["70% cut"]:"-"}</td>
-   <td>${row?row["모집인원"]:"-"}</td>
-   <td>${row?row["경쟁률"]:"-"}</td>
-   <td>${row?row["충원순위"]:"-"}</td>
+    <td>${y}</td>
+    <td>${r?r["50% cut"]:"-"}</td>
+    <td>${r?r["70% cut"]:"-"}</td>
+    <td>${r?r["모집인원"]:"-"}</td>
+    <td>${r?r["경쟁률"]:"-"}</td>
+    <td>${r?r["충원순위"]:"-"}</td>
   </tr>
  `;
  });
+ return t;
+}
 
- wrap.appendChild(table);
- return wrap;
+/* render current */
+function renderCurrent(){
+ const box=document.getElementById("currentBox");
+
+ if(!detail.value){
+  box.innerHTML="현재 선택된 전형이 없습니다";
+  return;
+ }
+
+ const by=rows();
+ box.innerHTML="";
+ box.appendChild(thermoBlock(by));
+ box.appendChild(tableBlock(by));
+}
+
+/* compare list */
+btnAdd.onclick=()=>{
+ if(!detail.value)return alert("모두 선택해주세요");
+ if(compare.length>=3)return alert("최대 3개");
+
+ compare.push({
+  univ:univ.value,
+  major:major.value,
+  type:type.value,
+  detail:detail.value
+ });
+
+ renderCompare();
+}
+
+btnReset.onclick=()=>location.reload();
+
+function renderCompare(){
+ const box=document.getElementById("compareBox");
+ box.innerHTML="";
+ compare.forEach(sel=>{
+  const by=rows(sel);
+  const d=document.createElement("div");
+  d.appendChild(thermoBlock(by));
+  d.appendChild(tableBlock(by));
+  box.appendChild(d);
+ });
 }
 
 load();
 </script>
+
 </body>
 </html>
