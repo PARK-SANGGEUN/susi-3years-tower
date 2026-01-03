@@ -1,416 +1,829 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
+  <meta charset="UTF-8" />
+  <title>모두의 수시 3개년 입시결과 비교 온도계</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; }
 
-<title>모두의 수시 3개년 입시결과 비교 온도계</title>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, #ffe1cc 0%, #ffeaf6 50%, #e4f3ff 100%);
+      color: #222;
+    }
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 14px 80px;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;800&display=swap" rel="stylesheet">
+    h1 {
+      margin: 6px 0 2px;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
 
-<style>
-body{
-    font-family:Pretendard, sans-serif;
-    margin:0;
-    background:linear-gradient(#ffe2d3,#e9f2ff);
-    color:#222;
-}
+    .sub-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
 
-.container{
-    max-width:1200px;
-    margin:20px auto;
-    padding:10px 20px;
-}
+    .meta-line {
+      font-size: 13px;
+      font-weight: 800;
+      margin: 1px 0;
+    }
 
-/* 제목 */
-.title{
-    font-size:32px;
-    font-weight:900;
-}
+    .meta-line span.label {
+      font-weight: 900;
+      padding-right: 4px;
+    }
 
-/* 저작권 출처 */
-.subtitle{
-    font-size:14px;
-    font-weight:900;
-    margin-top:2px;
-}
+    .meta-line span.value {
+      font-weight: 700;
+    }
 
-/* 검색박스 */
-.search-box{
-    margin-top:20px;
-    background:white;
-    border-radius:18px;
-    padding:18px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.1);
-}
+    .badge-line {
+      margin: 12px 0 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
-/* 드롭다운 */
-select{
-    padding:10px;
-    border-radius:10px;
-    border:2px solid #ffa3a3;
-    font-size:14px;
-    margin-right:6px;
-}
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      box-shadow: 0 7px 20px rgba(0,0,0,0.12);
+      border: 1px solid rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+    }
+    .badge-orange { background: linear-gradient(90deg,#ff9a6b,#ff5b7a); color:#fff; }
+    .badge-blue   { background: linear-gradient(90deg,#6bc5ff,#8c7bff); color:#fff; }
+    .badge-gray   { background: rgba(255,255,255,0.85); color:#444; }
 
-/* 버튼 */
-button{
-    padding:10px 16px;
-    border-radius:16px;
-    border:none;
-    font-weight:900;
-    cursor:pointer;
-}
-.add-btn{ background:#ff3f6d;color:white;}
-.reset-btn{background:#222;color:white;}
+    .card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px;
+      padding: 16px 18px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.10);
+      border: 1px solid rgba(255,255,255,0.9);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.14);
+    }
 
-.section{
-    margin-top:25px;
-    padding:20px;
-    background:white;
-    border-radius:18px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.07);
-}
+    .card-header {
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-header span.num {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      background: #ff7b5c;
+      color: #fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 12px;
+    }
 
-/* ========= 체온계 ============ */
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .field {
+      flex: 1 1 200px;
+      min-width: 180px;
+    }
+    .field-label {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    select {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 2px solid #ffb38a;
+      font-size: 15px;
+      font-weight: 700;
+      background: #fffdfb;
+      outline: none;
+      appearance: none;
+      background-image: linear-gradient(45deg,transparent 50%,#ff7b5c 50%),linear-gradient(135deg,#ff7b5c 50%,transparent 50%);
+      background-position: calc(100% - 16px) 16px, calc(100% - 11px) 16px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+    select:disabled {
+      border-color: #e1e1e1;
+      background-color: #f7f7f7;
+      color:#999;
+    }
 
-.thermo-wrap{
-    display:flex;
-    justify-content:space-around;
-    flex-wrap:wrap;
-    gap:20px;
-}
+    .search-actions {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
 
-.thermo{
-    width:30%;
-    text-align:center;
-}
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: -0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      transition: transform .1s ease, box-shadow .1s ease, filter .1s ease;
+      white-space: nowrap;
+    }
+    .btn-main {
+      background: linear-gradient(120deg,#ff7b5c,#ff3c7d);
+      color:#fff;
+    }
+    .btn-sub {
+      background: #ffffff;
+      color:#444;
+    }
+    .btn:disabled {
+      cursor: default;
+      opacity: .5;
+      box-shadow: none;
+    }
+    .btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.16);
+      filter: brightness(1.02);
+    }
 
-/* 연도뱃지 */
-.year-badge{
-    padding:6px 12px;
-    border-radius:20px;
-    font-weight:900;
-}
-.y2025{background:#ffe7f3;color:#ff0077;box-shadow:0 0 12px #ff3f7b;}
-.y2024{background:#fff0da;color:#ff7a00;}
-.y2023{background:#eaf0ff;color:#3a4bff;}
+    .hint {
+      font-size: 12px;
+      color:#555;
+      margin-top:6px;
+      line-height: 1.5;
+    }
 
-/* 온도계 몸통 */
-.bar-outer{
-    margin:12px auto 0;
-    height:220px;
-    width:90px;
-    border-radius:50px;
-    background:linear-gradient(#ffffff,#f3f6fa);
-    border:2px solid #ccc;
-    position:relative;
-}
+    #currentResult {
+      margin-top: 4px;
+    }
+    .result-empty {
+      font-size: 13px;
+      color:#555;
+      padding: 10px 4px;
+      line-height: 1.6;
+    }
+    .result-header-line {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .result-header-line span.tag {
+      display:inline-block;
+      padding:3px 8px;
+      border-radius: 999px;
+      font-size:11px;
+      margin-right:6px;
+      background: #ffe1ce;
+    }
+    .result-title {
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .result-sub {
+      font-size: 13px;
+      color:#555;
+      margin-bottom: 10px;
+    }
 
-/* 눈금 */
-.scale-line{
-    position:absolute;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    width:100%;
-}
+    table.result-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    table.result-table th,
+    table.result-table td {
+      padding: 6px 6px;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    table.result-table th {
+      background: #fff4ee;
+      font-weight: 800;
+    }
 
-.scale-line div{
-    width:100%;
-    border-top:1px dashed #bbb;
-    font-size:10px;
-    color:#555;
-}
+    .thermo-wrapper {
+      display:flex;
+      gap:14px;
+      margin-top: 10px;
+      align-items:flex-end;
+    }
+    .thermo-col {
+      flex:1;
+      text-align:center;
+      font-size: 12px;
+      font-weight:700;
+      color:#444;
+    }
+    .thermo-year {
+      margin-bottom:4px;
+    }
+    .thermo-shell {
+      height:130px;
+      padding:4px;
+      border-radius:999px;
+      background:linear-gradient(180deg,#ffffff,#ffe9df);
+      border:2px solid rgba(255,255,255,0.9);
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.06);
+      position:relative;
+      overflow:hidden;
+    }
+    .thermo-fill {
+      position:absolute;
+      left:4px;
+      right:4px;
+      bottom:4px;
+      border-radius:999px;
+      height:0;
+      background:linear-gradient(180deg,#ff5f6d,#ffc371);
+      box-shadow:0 6px 16px rgba(255,120,80,0.55);
+      transition:height .7s ease;
+    }
+    .thermo-fill.level-easy {
+      background:linear-gradient(180deg,#6bdc7e,#c9ff9b);
+      box-shadow:0 6px 14px rgba(60,180,80,0.45);
+    }
+    .thermo-value {
+      margin-top:4px;
+      font-size:12px;
+      font-weight:800;
+    }
 
-/* 내부 게이지 */
-.bar-inner{
-    position:absolute;
-    bottom:0;
-    left:0;
-    width:100%;
-    border-radius:50px;
-    background:linear-gradient(#ff0066,#ffb36c);
-}
+    .compare-item {
+      margin-top: 10px;
+      padding: 10px 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.98);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.12);
+      border: 1px solid rgba(255,255,255,0.9);
+      position: relative;
+    }
+    .compare-item-header {
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      margin-bottom:6px;
+    }
+    .compare-label {
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .badge-index {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:20px;
+      height:20px;
+      border-radius:999px;
+      background:#ff7b5c;
+      color:#fff;
+      font-size:11px;
+      margin-right:4px;
+    }
 
-/* 숫자 */
-.score{
-    margin-top:12px;
-    font-size:22px;
-    font-weight:900;
-}
+    .btn-mini {
+      padding:4px 9px;
+      font-size:11px;
+      border-radius:999px;
+      background:#ffe9ef;
+      color:#c0394f;
+      box-shadow:none;
+    }
+    .btn-mini:hover {
+      box-shadow:none;
+      transform:none;
+      filter:brightness(0.98);
+    }
 
-/* 난이도 텍스트 */
-.level-tag{font-weight:900;}
+    @media (max-width: 900px) {
+      h1 { font-size:24px; }
+      .sub-title { font-size:14px; }
+      .card { padding:14px 14px 16px; }
+      select { font-size:14px; }
+    }
 
-/* 표 */
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:12px;
-    text-align:center;
-}
-
-th{
-    background:#f5f8ff;
-    border-bottom:2px solid #777;
-    padding:10px;
-}
-td{
-    padding:9px;
-    border-bottom:1px solid #ddd;
-    border-right:1px solid #ddd;
-}
-td:last-child,th:last-child{border-right:none;}
-
-.highlight{
-    font-weight:900;
-    color:#ff004c;
-    background:#fff0f4;
-}
-
-/* 비교목록 박스 */
-.compare-box-item{
-    padding:10px;
-    border-radius:12px;
-    border:1px solid #eee;
-    margin-top:6px;
-}
-</style>
+    @media (max-width: 640px) {
+      h1 { font-size:22px; }
+      .search-actions { justify-content:flex-start; }
+      .btn { flex:1 1 auto; justify-content:center; }
+    }
+  </style>
 </head>
-
 <body>
-<div class="container">
+  <div class="page">
+    <h1>모두의 수시 3개년 입시결과 비교 온도계</h1>
+    <div class="sub-title">대학 · 모집단위 · 전형유형 · 세부전형을 선택하여 3개년 70% cut을 한눈에 비교하세요.</div>
+    <div class="meta-line"><span class="label">Copyright</span><span class="value">@All Teachers</span></div>
+    <div class="meta-line"><span class="label">출처</span><span class="value">3개년 어디가 수시 입시결과</span></div>
 
-<div class="title">모두의 수시 3개년 입시결과 비교 온도계</div>
-
-<div class="subtitle">Copyright @All Teachers</div>
-<div class="subtitle">출처 : 어디가 3개년 수시 입시결과</div>
-
-<div class="search-box">
-<b>검색 기준 선택 (한줄 검색형)</b><br><br>
-
-대학
-<select id="univ"></select>
-
-모집단위
-<select id="dept"></select>
-
-전형유형
-<select id="type"></select>
-
-세부전형
-<select id="detail"></select>
-
-<button class="add-btn" onclick="addCompare()">비교 추가</button>
-<button class="reset-btn" onclick="resetCompare()">초기화</button>
-</div>
-
-<div class="section" id="resultBox">
-선택된 전형의 3개년 결과가 여기에 표시됩니다.
-</div>
-
-<div class="section" id="compareList">
-<b>선택 비교 목록 (최대 3개)</b>
-</div>
-
-</div>
-
-<script>
-let dataFile="data/data.json";
-let allData=[];
-let currentItem=null;
-let compareItems=[];
-
-/* 데이터 로드 */
-fetch(dataFile)
-.then(r=>r.json())
-.then(d=>{
-    allData=d;
-    initUniversities();
-});
-
-/* 대학 목록 */
-function initUniversities(){
-    let unis=[...new Set(allData.map(v=>v.대학))];
-    let sel=document.getElementById("univ");
-    sel.innerHTML=`<option value="">선택</option>`;
-    unis.forEach(v=> sel.innerHTML+=`<option>${v}</option>`);
-    sel.onchange=onUnivChange;
-}
-
-/* 대학 선택 */
-function onUnivChange(){
-    let univ=document.getElementById("univ");
-    let deptSel=document.getElementById("dept");
-
-    let filtered=allData.filter(v=>v.대학==univ.value);
-    let depts=[...new Set(filtered.map(v=>v.모집단위))];
-
-    deptSel.innerHTML=`<option value="">선택</option>`;
-    depts.forEach(v=> deptSel.innerHTML+=`<option>${v}</option>`);
-
-    deptSel.onchange=onDeptChange;
-}
-
-/* 모집단위 선택 */
-function onDeptChange(){
-    let univ=document.getElementById("univ");
-    let dept=document.getElementById("dept");
-    let typeSel=document.getElementById("type");
-
-    let filtered=allData.filter(v=>v.대학==univ.value && v.모집단위==dept.value);
-    let types=[...new Set(filtered.map(v=>v.전형유형))];
-
-    typeSel.innerHTML=`<option value="">선택</option>`;
-    types.forEach(v=> typeSel.innerHTML+=`<option>${v}</option>`);
-
-    typeSel.onchange=onTypeChange;
-}
-
-/* 전형 선택 */
-function onTypeChange(){
-    let univ=document.getElementById("univ");
-    let dept=document.getElementById("dept");
-    let type=document.getElementById("type");
-    let detSel=document.getElementById("detail");
-
-    let filtered=allData.filter(v=>v.대학==univ.value && v.모집단위==dept.value && v.전형유형==type.value);
-    let dets=[...new Set(filtered.map(v=>v.세부전형))];
-
-    detSel.innerHTML=`<option value="">선택</option>`;
-    dets.forEach(v=> detSel.innerHTML+=`<option>${v}</option>`);
-
-    detSel.onchange=showResult;
-}
-
-/* 1개 선택 결과 표시 */
-function showResult(){
-    let univ=document.getElementById("univ");
-    let dept=document.getElementById("dept");
-    let type=document.getElementById("type");
-    let det=document.getElementById("detail");
-
-    let filtered=allData.filter(v=>
-        v.대학==univ.value &&
-        v.모집단위==dept.value &&
-        v.전형유형==type.value &&
-        v.세부전형==det.value
-    );
-
-    currentItem=filtered;
-    renderResult(filtered);
-}
-
-/* 게이지 길이 계산 */
-function convertGauge(score){
-    let val=Math.pow((10-score),1.6);
-    return Math.min(210,val*9);
-}
-
-/* 난이도 텍스트 */
-function levelText(s){
-    if(s<=1.9) return "🔥 매우 어려움";
-    if(s<=2.4) return "😈 어려움";
-    if(s<=3.0) return "🙂 보통";
-    return "🟢 쉬움";
-}
-
-/* 결과 화면 출력 */
-function renderResult(list){
-
-    if(list.length==0){
-        resultBox.innerHTML="데이터가 없습니다.";
-        return;
-    }
-
-    let yearMap={};
-    list.forEach(v=> yearMap[v.학년도]=v);
-
-    function thermo(y,cls){
-        if(!yearMap[y]) return `<div class="thermo">데이터없음</div>`;
-        let sc=Number(yearMap[y]["70컷"]);
-        let h=convertGauge(sc);
-
-        return `
-        <div class="thermo">
-            <div class="year-badge ${cls}">${y}학년도</div>
-            <div class="bar-outer">
-                <div class="scale-line">
-                    <div>3.0</div><div>2.5</div><div>2.0</div><div>1.5</div><div>1.0</div>
-                </div>
-                <div class="bar-inner" style="height:${h}px"></div>
-            </div>
-            <div class="score">${sc.toFixed(2)}등급</div>
-            <div class="level-tag">${levelText(sc)}</div>
-        </div>`;
-    }
-
-    resultBox.innerHTML=`
-    <h3>현재 선택 전형의 3개년 비교 결과</h3>
-
-    <b>${univ.value} / ${dept.value}</b><br>
-    ${type.value} / ${detail.value}<br><br>
-
-    <div class="thermo-wrap">
-        ${thermo("2025","y2025")}
-        ${thermo("2024","y2024")}
-        ${thermo("2023","y2023")}
+    <div class="badge-line">
+      <span class="badge badge-orange">3개년 cut(50/70) &amp; 온도계로 난이도 체감</span>
+      <span class="badge badge-blue">교과 · 종합 전형유형별 정렬</span>
+      <span class="badge badge-gray">검색 결과 1개 + 비교 추가 목록(최대 3개) 누적</span>
     </div>
 
-    <table>
-    <tr>
-        <th>연도</th>
-        <th>50%컷</th>
-        <th>70%컷</th>
-        <th>모집인원</th>
-        <th>경쟁률</th>
-        <th>충원율</th>
-    </tr>
-    ${["2025","2024","2023"].map(y=>{
-        if(!yearMap[y]) return "";
-        return `
-        <tr>
-            <td class="highlight">${y}</td>
-            <td>${yearMap[y]["50컷"]}</td>
-            <td class="highlight">${yearMap[y]["70컷"]}</td>
-            <td>${yearMap[y]["모집인원"]}</td>
-            <td>${yearMap[y]["경쟁률"]}</td>
-            <td>${yearMap[y]["충원율"]}</td>
-        </tr>`;
-    }).join("")}
-    </table>
-    `;
-}
+    <div class="card">
+      <div class="card-header">
+        <span class="num">1</span> 검색 기준 선택 (한 줄 검색 행)
+      </div>
+      <div class="search-row">
+        <div class="field">
+          <div class="field-label">대학 선택</div>
+          <select id="univSelect">
+            <option value="">로딩 중...</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">모집단위(학과) 선택</div>
+          <select id="majorSelect" disabled>
+            <option value="">대학을 먼저 선택하세요</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">전형유형 선택 (교과 / 종합)</div>
+          <select id="typeSelect" disabled>
+            <option value="">모집단위를 먼저 선택하세요</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">세부 전형 선택</div>
+          <select id="detailSelect" disabled>
+            <option value="">전형유형을 먼저 선택하세요</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-actions">
+        <button id="addCompareBtn" class="btn btn-main" disabled>＋ 비교 추가 (최대 3개)</button>
+        <button id="resetBtn" class="btn btn-sub">선택 초기화</button>
+      </div>
+      <div class="hint">
+        기본 화면은 현재 선택한 1개 전형의 3개년 비교입니다.<br />
+        비교 추가 버튼을 누르면 선택이 비교 목록에 누적되며, 선택을 바꿔도 비교 목록은 유지됩니다.
+      </div>
+    </div>
 
-/* 비교 추가 */
-function addCompare(){
-    if(!currentItem) return;
-    if(compareItems.length>=3) return alert("최대 3개까지 비교 가능");
-    compareItems.push(currentItem);
-    renderCompare();
-}
+    <div class="card">
+      <div class="card-header">
+        <span class="num">2</span> 현재 선택 1개 전형의 3개년 결과
+      </div>
+      <div id="currentResult">
+        <div class="result-empty">
+          아직 선택된 전형이 없습니다.<br />
+          위 검색 행에서 대학 → 모집단위 → 전형유형(교과/종합) → 세부전형을 순서대로 선택하면<br />
+          2025 · 2024 · 2023학년도 3개년 cut(50/70)과 온도계 그래프가 여기 표시됩니다.
+        </div>
+      </div>
+    </div>
 
-/* 비교 초기화 */
-function resetCompare(){
-    compareItems=[];
-    renderCompare();
-}
+    <div class="card">
+      <div class="card-header">
+        <span class="num">3</span> 선택 비교 목록 (최대 3개까지 누적)
+      </div>
+      <div class="hint">
+        비교 추가 버튼을 누른 전형이 아래에 순서대로 쌓입니다.  
+        각 항목은 개별 삭제가 가능하며, 페이지를 새로고침하면 목록이 초기화됩니다.
+      </div>
+      <div id="compareList"></div>
+    </div>
+  </div>
 
-/* 비교 목록 출력 */
-function renderCompare(){
-    compareList.innerHTML=`<b>선택 비교 목록 (최대 3개)</b><br>`;
-    compareItems.forEach((d,i)=>{
-        compareList.innerHTML+=`
-        <div class="compare-box-item">
-            ${d[0].대학} / ${d[0].모집단위} / ${d[0].세부전형}
-            <button onclick="compareItems.splice(${i},1);renderCompare();">삭제</button>
-        </div>`;
+  <script>
+    const YEARS = [2025, 2024, 2023];
+    let DATA = [];
+    let compareSelections = [];
+
+    const univSelect   = document.getElementById("univSelect");
+    const majorSelect  = document.getElementById("majorSelect");
+    const typeSelect   = document.getElementById("typeSelect");
+    const detailSelect = document.getElementById("detailSelect");
+    const addCompareBtn = document.getElementById("addCompareBtn");
+    const resetBtn     = document.getElementById("resetBtn");
+    const currentResultBox = document.getElementById("currentResult");
+    const compareListBox   = document.getElementById("compareList");
+
+    function unique(arr) {
+      return [...new Set(arr)].sort((a,b)=>a.localeCompare(b,"ko"));
+    }
+
+    function extractYear(value) {
+      const s = String(value ?? "");
+      const m = s.match(/(\d{4})/);
+      return m ? Number(m[1]) : null;
+    }
+
+    function normalizeRow(row) {
+      row._year = extractYear(row["연도"]);
+
+      ["50% cut","70% cut"].forEach(key=>{
+        if (row[key] !== undefined && row[key] !== null && row[key] !== "") {
+          const n = Number(row[key]);
+          if (!Number.isNaN(n)) row[key] = n;
+        }
+      });
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch("data/data.json");
+        const raw = await res.json();
+        DATA = raw || [];
+        DATA.forEach(normalizeRow);
+        initUnivSelect();
+      } catch (e) {
+        console.error(e);
+        univSelect.innerHTML = "<option value=''>데이터를 불러오지 못했습니다</option>";
+        alert("data/data.json을 불러오지 못했습니다. 파일 위치와 이름을 확인해 주세요.");
+      }
+    }
+
+    function initUnivSelect() {
+      const univs = unique(DATA.map(r => r["대학명"]).filter(Boolean));
+      fillSelect(univSelect, univs, "대학을 선택하세요");
+      univSelect.disabled = false;
+      univSelect.addEventListener("change", handleUnivChange);
+    }
+
+    function fillSelect(select, items, placeholder) {
+      select.innerHTML = "";
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = placeholder;
+      select.appendChild(opt);
+      items.forEach(v => {
+        const o = document.createElement("option");
+        o.value = v;
+        o.textContent = v;
+        select.appendChild(o);
+      });
+    }
+
+    function disableSelect(sel, message) {
+      sel.disabled = true;
+      sel.innerHTML = "";
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = message;
+      sel.appendChild(opt);
+    }
+
+    function handleUnivChange() {
+      const univ = univSelect.value;
+      disableSelect(majorSelect, "대학을 먼저 선택하세요");
+      disableSelect(typeSelect, "모집단위를 먼저 선택하세요");
+      disableSelect(detailSelect, "전형유형을 먼저 선택하세요");
+      addCompareBtn.disabled = true;
+      renderCurrentResult(null);
+
+      if (!univ) return;
+
+      const filtered = DATA.filter(r => r["대학명"] === univ);
+      const majors = unique(filtered.map(r => r["모집단위"]).filter(Boolean));
+      fillSelect(majorSelect, majors, "모집단위를 선택하세요");
+      majorSelect.disabled = false;
+
+      majorSelect.onchange = function () {
+        const major = majorSelect.value;
+        disableSelect(typeSelect, "모집단위를 먼저 선택하세요");
+        disableSelect(detailSelect, "전형유형을 먼저 선택하세요");
+        addCompareBtn.disabled = true;
+        renderCurrentResult(null);
+
+        if (!major) return;
+
+        const list = filtered.filter(r => r["모집단위"] === major);
+        const types = unique(list.map(r => r["중심전형"]).filter(Boolean));
+        fillSelect(typeSelect, types, "전형유형을 선택하세요");
+        typeSelect.disabled = false;
+
+        typeSelect.onchange = function () {
+          const type = typeSelect.value;
+          disableSelect(detailSelect, "전형유형을 먼저 선택하세요");
+          addCompareBtn.disabled = true;
+          renderCurrentResult(null);
+
+          if (!type) return;
+
+          const list2 = list.filter(r => r["중심전형"] === type);
+          const details = unique(list2.map(r => r["전형명"]).filter(Boolean));
+          fillSelect(detailSelect, details, "세부 전형을 선택하세요");
+          detailSelect.disabled = false;
+
+          detailSelect.onchange = function () {
+            const detail = detailSelect.value;
+            addCompareBtn.disabled = !detail;
+            if (!detail) {
+              renderCurrentResult(null);
+            } else {
+              const selection = {
+                univ,
+                major,
+                type,
+                detail
+              };
+              renderCurrentResult(selection);
+            }
+          };
+        };
+      };
+    }
+
+    function getRowsForSelection(sel) {
+      if (!sel) return null;
+      const byYear = {};
+      YEARS.forEach(y => {
+        const row = DATA.find(r =>
+          r._year === y &&
+          r["대학명"] === sel.univ &&
+          r["모집단위"] === sel.major &&
+          r["중심전형"] === sel.type &&
+          r["전형명"] === sel.detail
+        );
+        byYear[y] = row || null;
+      });
+      return byYear;
+    }
+
+    function createThermoBlock(rowsByYear) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "thermo-wrapper";
+
+      YEARS.forEach(year => {
+        const col = document.createElement("div");
+        col.className = "thermo-col";
+
+        const label = document.createElement("div");
+        label.className = "thermo-year";
+        label.textContent = year + "학년도";
+        col.appendChild(label);
+
+        const shell = document.createElement("div");
+        shell.className = "thermo-shell";
+
+        const fill = document.createElement("div");
+        fill.className = "thermo-fill";
+
+        const row = rowsByYear[year];
+        const v = row && typeof row["70% cut"] === "number" ? row["70% cut"] : null;
+
+        let heightPercent = 0;
+        let text = "데이터 없음";
+
+        if (v !== null) {
+          heightPercent = (10 - v) / 9 * 100;
+          if (heightPercent < 8) heightPercent = 8;
+          if (heightPercent > 100) heightPercent = 100;
+          text = v.toFixed(2) + "등급";
+
+          if (v >= 4.0) {
+            fill.classList.add("level-easy");
+          }
+        }
+
+        shell.appendChild(fill);
+        col.appendChild(shell);
+
+        const value = document.createElement("div");
+        value.className = "thermo-value";
+        value.textContent = text;
+        col.appendChild(value);
+
+        setTimeout(() => {
+          fill.style.height = heightPercent + "%";
+        }, 30);
+
+        wrapper.appendChild(col);
+      });
+
+      return wrapper;
+    }
+
+    function createTableBlock(rowsByYear) {
+      const table = document.createElement("table");
+      table.className = "result-table";
+
+      const headerRow = document.createElement("tr");
+      ["연도","50% cut","70% cut"].forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      YEARS.forEach(y => {
+        const tr = document.createElement("tr");
+        const row = rowsByYear[y];
+
+        const tdYear = document.createElement("td");
+        tdYear.textContent = y;
+        tr.appendChild(tdYear);
+
+        const c50 = row && row["50% cut"] != null ? row["50% cut"] : "-";
+        const c70 = row && row["70% cut"] != null ? row["70% cut"] : "-";
+
+        const td50 = document.createElement("td");
+        td50.textContent = typeof c50 === "number" ? c50.toFixed(2) : c50;
+        tr.appendChild(td50);
+
+        const td70 = document.createElement("td");
+        td70.textContent = typeof c70 === "number" ? c70.toFixed(2) : c70;
+        tr.appendChild(td70);
+
+        table.appendChild(tr);
+      });
+
+      return table;
+    }
+
+    function createResultBlock(selection, rowsByYear) {
+      const container = document.createElement("div");
+
+      const title = document.createElement("div");
+      title.className = "result-title";
+      title.textContent = selection.univ + " / " + selection.major;
+      container.appendChild(title);
+
+      const sub = document.createElement("div");
+      sub.className = "result-sub";
+      sub.textContent = "[" + selection.type + "] " + selection.detail + " 전형 · 3개년 cut(50/70) & 온도계 비교";
+      container.appendChild(sub);
+
+      const headerLine = document.createElement("div");
+      headerLine.className = "result-header-line";
+      headerLine.innerHTML =
+        "<span class='tag'>🌡 70% cut 온도계</span>" +
+        "<span>1등급에 가까울수록 온도가 높게 표시됩니다.</span>";
+      container.appendChild(headerLine);
+
+      container.appendChild(createThermoBlock(rowsByYear));
+
+      const headerLine2 = document.createElement("div");
+      headerLine2.className = "result-header-line";
+      headerLine2.style.marginTop = "10px";
+      headerLine2.innerHTML =
+        "<span class='tag'>📊 3개년 데이터 표</span>" +
+        "<span>연도별 50% cut · 70% cut 수치를 함께 확인하세요.</span>";
+      container.appendChild(headerLine2);
+
+      container.appendChild(createTableBlock(rowsByYear));
+
+      return container;
+    }
+
+    function renderCurrentResult(selection) {
+      currentResultBox.innerHTML = "";
+      if (!selection) {
+        const div = document.createElement("div");
+        div.className = "result-empty";
+        div.innerHTML =
+          "아직 선택된 전형이 없습니다.<br>" +
+          "위 검색 행에서 대학 → 모집단위 → 전형유형(교과/종합) → 세부전형을 순서대로 선택해 주세요.";
+        currentResultBox.appendChild(div);
+        return;
+      }
+
+      const rowsByYear = getRowsForSelection(selection);
+      const hasAny = YEARS.some(y => rowsByYear[y]);
+
+      if (!hasAny) {
+        const div = document.createElement("div");
+        div.className = "result-empty";
+        div.textContent = "해당 전형에 대한 3개년 데이터가 없습니다.";
+        currentResultBox.appendChild(div);
+        return;
+      }
+
+      currentResultBox.appendChild(createResultBlock(selection, rowsByYear));
+    }
+
+    function renderCompareList() {
+      compareListBox.innerHTML = "";
+      if (compareSelections.length === 0) {
+        const div = document.createElement("div");
+        div.className = "result-empty";
+        div.textContent = "비교 목록이 비어 있습니다. 상단에서 전형을 선택한 후 '비교 추가'를 눌러주세요.";
+        compareListBox.appendChild(div);
+        return;
+      }
+
+      compareSelections.forEach((sel, index) => {
+        const rowsByYear = getRowsForSelection(sel);
+        const hasAny = YEARS.some(y => rowsByYear[y]);
+
+        const item = document.createElement("div");
+        item.className = "compare-item";
+
+        const header = document.createElement("div");
+        header.className = "compare-item-header";
+
+        const left = document.createElement("div");
+        left.className = "compare-label";
+        left.innerHTML =
+          "<span class='badge-index'>" + (index+1) + "</span>" +
+          sel.univ + " / " + sel.major +
+          " <span style='font-size:11px;color:#777'>[" + sel.type + "] " + sel.detail + "</span>";
+
+        const right = document.createElement("div");
+        const btnDel = document.createElement("button");
+        btnDel.className = "btn btn-mini";
+        btnDel.textContent = "삭제";
+        btnDel.onclick = function () {
+          compareSelections.splice(index, 1);
+          renderCompareList();
+        };
+        right.appendChild(btnDel);
+
+        header.appendChild(left);
+        header.appendChild(right);
+        item.appendChild(header);
+
+        if (!hasAny) {
+          const empty = document.createElement("div");
+          empty.className = "result-empty";
+          empty.textContent = "이 전형은 3개년 데이터가 없습니다.";
+          item.appendChild(empty);
+        } else {
+          item.appendChild(createResultBlock(sel, rowsByYear));
+        }
+
+        compareListBox.appendChild(item);
+      });
+    }
+
+    addCompareBtn.addEventListener("click", function () {
+      const univ = univSelect.value;
+      const major = majorSelect.value;
+      const type  = typeSelect.value;
+      const detail= detailSelect.value;
+
+      if (!univ || !major || !type || !detail) {
+        alert("대학, 모집단위, 전형유형, 세부전형을 모두 선택한 후 비교를 추가해 주세요.");
+        return;
+      }
+      if (compareSelections.length >= 3) {
+        alert("비교 목록은 최대 3개까지 추가할 수 있습니다.");
+        return;
+      }
+
+      const selection = { univ, major, type, detail };
+
+      const exists = compareSelections.some(s =>
+        s.univ === univ && s.major === major && s.type === type && s.detail === detail
+      );
+      if (exists) {
+        alert("이미 비교 목록에 있는 전형입니다.");
+        return;
+      }
+
+      compareSelections.push(selection);
+      renderCompareList();
     });
-}
-</script>
 
+    resetBtn.addEventListener("click", function () {
+      univSelect.selectedIndex = 0;
+      handleUnivChange();
+      renderCurrentResult(null);
+    });
+
+    loadData();
+    renderCompareList();
+  </script>
 </body>
 </html>
