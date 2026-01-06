@@ -447,6 +447,58 @@ details.fold .inner{ padding:10px 12px 12px; background:#fff; }
 
 /* 빈 상태 */
 .empty-text{ font-size:13px; color:#555; }
+  /* ===== 타워 입체감 추가 강화 ===== */
+.tower-pillar{
+  perspective: 800px;
+}
+.tower-fill{
+  transform-style: preserve-3d;
+}
+
+/* 측면 그림자 (타워 두께감) */
+.tower-fill::after{
+  content:"";
+  position:absolute;
+  top:0;
+  right:-10px;
+  width:10px;
+  height:100%;
+  background: linear-gradient(90deg, rgba(0,0,0,.25), rgba(0,0,0,0));
+}
+
+/* 층 구분 라인 (건물 느낌 핵심) */
+.tower-fill{
+  background-size: 100% 18px;
+  background-image:
+    repeating-linear-gradient(
+      to top,
+      rgba(255,255,255,.18) 0,
+      rgba(255,255,255,.18) 2px,
+      transparent 2px,
+      transparent 18px
+    );
+}
+.swipe-hint{
+  position:absolute;
+  top:8px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(120deg,#ff7b61,#ff3d7a);
+  color:#fff;
+  font-size:12px;
+  font-weight:1000;
+  padding:6px 14px;
+  border-radius:999px;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+  animation:pulseHint 1.4s infinite;
+  z-index:5;
+}
+@keyframes pulseHint{
+  0%{ transform:translateX(-50%) scale(1); }
+  50%{ transform:translateX(-50%) scale(1.05); }
+  100%{ transform:translateX(-50%) scale(1); }
+}
+
 </style>
 </head>
 
@@ -857,6 +909,12 @@ function createScoreTowerBlock(rowsByYear) {
       if (badgeText) badge.classList.add("on");
       if (year === 2025) setTimeout(()=>spark.classList.add("on"), 180);
     }, 120 + (idx * 90));
+// 파티클 위치 계산
+const rect = pillar.getBoundingClientRect();
+spawnParticles(
+  rect.left + rect.width / 2,
+  rect.top + 10
+);
 
     wrap.appendChild(col);
   });
@@ -1024,6 +1082,12 @@ function renderCompareList() {
   } else {
     host = compareListBox;
   }
+if (useSlider && compareSelections.length >= 2) {
+  const hint = document.createElement("div");
+  hint.className = "swipe-hint";
+  hint.textContent = "← 좌우로 밀어 비교하세요 →";
+  compareListBox.prepend(hint);
+}
 
   compareSelections.forEach((sel, index) => {
     const rowsByYear = getRowsForSelection(sel);
@@ -1171,6 +1235,48 @@ window.addEventListener("resize", () => {
 loadData();
 renderCompareList();
 syncCompareModeUI();
+  /* ===== 타워 파티클 ===== */
+const canvas = document.getElementById("towerParticles");
+const ctx = canvas.getContext("2d");
+let particles = [];
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+function spawnParticles(x,y){
+  for(let i=0;i<18;i++){
+    particles.push({
+      x,y,
+      vx:(Math.random()-0.5)*2.5,
+      vy:-Math.random()*3,
+      life:60
+    });
+  }
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles = particles.filter(p=>p.life-- > 0);
+  particles.forEach(p=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=0.05;
+    ctx.fillStyle=`rgba(255,215,230,${p.life/60})`;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
 </script>
+  <canvas id="towerParticles"></canvas>
+
 </body>
 </html>
+
