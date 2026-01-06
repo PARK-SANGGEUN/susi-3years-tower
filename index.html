@@ -575,6 +575,7 @@ details.fold .inner{ padding:10px 12px 12px; background:#fff; }
 </div>
 
 <script>
+/* ===== 상수/전역 ===== */
 const YEARS = [2025, 2024, 2023];
 let DATA = [];
 let INDEX = {};   // {대학->{모집단위->{중심전형->{전형명->{연도:row}}}}}
@@ -601,9 +602,9 @@ const pageDots = document.getElementById("pageDots");
 
 let currentSlideIndex = 0;
 
-/* 유틸 */
+/* ===== 유틸 ===== */
 function extractYear(value) {
-  const s = String(value ?? "");
+  const s = String(value == null ? "" : value);
   const m = s.match(/(\d{4})/);
   return m ? m[1] : null;
 }
@@ -616,7 +617,7 @@ function fillSelect(select, items, placeholder) {
   opt.value = "";
   opt.textContent = placeholder;
   select.appendChild(opt);
-  items.forEach(v => {
+  items.forEach(function(v){
     const o = document.createElement("option");
     o.value = v;
     o.textContent = v;
@@ -632,24 +633,32 @@ function disableSelect(sel, message) {
   sel.appendChild(opt);
 }
 
-/* 데이터 로드 & 인덱스 생성 */
+/* ===== 데이터 로드 & 인덱스 ===== */
 async function loadData() {
   try {
-    const res = await fetch("data/data.json");
+    // 깃허브 기준 상대경로 안전하게
+    const res = await fetch("./data/data.json");
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
     const raw = await res.json();
-    DATA = raw || [];
+    if (!Array.isArray(raw)) {
+      throw new Error("data.json 형식 오류: 배열이 아닙니다.");
+    }
+    DATA = raw;
     buildIndex();
     initUnivSelect();
   } catch (e) {
     console.error(e);
     univSelect.innerHTML = "<option value=''>data/data.json 로드 실패</option>";
-    alert("data/data.json 로드에 실패했습니다. 경로/파일명을 확인해주세요.");
+    alert("data/data.json 로드에 실패했습니다. data 폴더와 파일명을 다시 확인해주세요.");
   }
 }
 
 function buildIndex() {
   INDEX = {};
-  for (const row of DATA) {
+  for (let i=0;i<DATA.length;i++){
+    const row = DATA[i];
     const univ = row["대학명"];
     const major = row["모집단위"];
     const type  = row["중심전형"];
@@ -666,13 +675,13 @@ function buildIndex() {
 }
 
 function initUnivSelect() {
-  const univs = Object.keys(INDEX).sort((a,b)=>a.localeCompare(b,"ko"));
+  const univs = Object.keys(INDEX).sort(function(a,b){ return a.localeCompare(b,"ko"); });
   fillSelect(univSelect, univs, "대학 선택");
   univSelect.disabled = false;
 }
 
-/* 드롭다운 이벤트 */
-univSelect.addEventListener("change", () => {
+/* ===== 드롭다운 이벤트 ===== */
+univSelect.addEventListener("change", function(){
   const univ = univSelect.value;
   disableSelect(majorSelect, "모집단위 선택");
   disableSelect(typeSelect, "전형유형 선택");
@@ -681,12 +690,17 @@ univSelect.addEventListener("change", () => {
   renderCurrentResult(null);
 
   if (!univ || !INDEX[univ]) return;
-  const majors = Object.keys(INDEX[univ]).sort((a,b)=>a.localeCompare(b,"ko"));
+  const majors = Object.keys(INDEX[univ]).sort(function(a,b){ return a.localeCompare(b,"ko"); });
   fillSelect(majorSelect, majors, "모집단위 선택");
-  majorSelect.disabled = false;
+  majorSelect.disabled = true;
+
+  // setTimeout으로 살짝 여유 줌 (모바일에서 렌더 타이밍 꼬임 방지)
+  setTimeout(function(){
+    majorSelect.disabled = false;
+  }, 0);
 });
 
-majorSelect.addEventListener("change", () => {
+majorSelect.addEventListener("change", function(){
   const univ = univSelect.value;
   const major = majorSelect.value;
   disableSelect(typeSelect, "전형유형 선택");
@@ -695,26 +709,28 @@ majorSelect.addEventListener("change", () => {
   renderCurrentResult(null);
 
   if (!univ || !major || !INDEX[univ] || !INDEX[univ][major]) return;
-  const types = Object.keys(INDEX[univ][major]).sort((a,b)=>a.localeCompare(b,"ko"));
+  const types = Object.keys(INDEX[univ][major]).sort(function(a,b){ return a.localeCompare(b,"ko"); });
   fillSelect(typeSelect, types, "전형유형 선택");
   typeSelect.disabled = false;
 });
 
-typeSelect.addEventListener("change", () => {
+typeSelect.addEventListener("change", function(){
   const univ = univSelect.value;
   const major = majorSelect.value;
-  const type = typeSelect.value;
+  const type  = typeSelect.value;
   disableSelect(detailSelect, "세부전형 선택");
   addCompareBtn.disabled = true;
   renderCurrentResult(null);
 
-  if (!univ || !major || !type || !INDEX[univ]?.[major]?.[type]) return;
-  const details = Object.keys(INDEX[univ][major][type]).sort((a,b)=>a.localeCompare(b,"ko"));
+  if (!univ || !major || !type) return;
+  if (!INDEX[univ] || !INDEX[univ][major] || !INDEX[univ][major][type]) return;
+
+  const details = Object.keys(INDEX[univ][major][type]).sort(function(a,b){ return a.localeCompare(b,"ko"); });
   fillSelect(detailSelect, details, "세부전형 선택");
   detailSelect.disabled = false;
 });
 
-detailSelect.addEventListener("change", () => {
+detailSelect.addEventListener("change", function(){
   const univ = univSelect.value;
   const major= majorSelect.value;
   const type = typeSelect.value;
@@ -723,23 +739,40 @@ detailSelect.addEventListener("change", () => {
   const valid = univ && major && type && detail;
   addCompareBtn.disabled = !valid;
 
-  if (!valid) return renderCurrentResult(null);
-  renderCurrentResult({ univ, major, type, detail });
+  if (!valid){
+    renderCurrentResult(null);
+    return;
+  }
+  renderCurrentResult({ univ:univ, major:major, type:type, detail:detail });
 });
 
-/* 선택된 전형의 3개년 row 가져오기 */
+/* ===== 선택된 전형의 3개년 row ===== */
 function getRowsForSelection(sel) {
   if (!sel) return null;
-  const { univ, major, type, detail } = sel;
+  const univ = sel.univ;
+  const major = sel.major;
+  const type  = sel.type;
+  const detail= sel.detail;
+
   const rowsByYear = {};
-  YEARS.forEach(y => {
+  YEARS.forEach(function(y){
     const key = String(y);
-    rowsByYear[y] = INDEX[univ]?.[major]?.[type]?.[detail]?.[key] || null;
+    if (
+      INDEX[univ] &&
+      INDEX[univ][major] &&
+      INDEX[univ][major][type] &&
+      INDEX[univ][major][type][detail] &&
+      INDEX[univ][major][type][detail][key]
+    ){
+      rowsByYear[y] = INDEX[univ][major][type][detail][key];
+    } else {
+      rowsByYear[y] = null;
+    }
   });
   return rowsByYear;
 }
 
-/* 증감 텍스트 생성 (70% cut 기준) */
+/* ===== 증감 텍스트 (70% cut) ===== */
 function createDiffText(currentRow, prevRow) {
   if (!currentRow || !prevRow) return { html: "-", cls: "diff-same" };
 
@@ -748,31 +781,31 @@ function createDiffText(currentRow, prevRow) {
   if (Number.isNaN(c) || Number.isNaN(p)) return { html: "-", cls: "diff-same" };
 
   const diff = (p - c); // 이전 - 지금
-  if (diff > 0) return { html: `▲ ${Math.abs(diff).toFixed(2)} 상승`, cls: "diff-up" };
-  if (diff < 0) return { html: `▼ ${Math.abs(diff).toFixed(2)} 하락`, cls: "diff-down" };
+  if (diff > 0) return { html: "▲ " + Math.abs(diff).toFixed(2) + " 상승", cls: "diff-up" };
+  if (diff < 0) return { html: "▼ " + Math.abs(diff).toFixed(2) + " 하락", cls: "diff-down" };
   return { html: "➖ 동일", cls: "diff-same" };
 }
 
-/* 테이블 블록 */
+/* ===== 테이블 블록 ===== */
 function createTableBlock(rowsByYear) {
   const table = document.createElement("table");
   table.className = "result-table";
 
   const headerRow = document.createElement("tr");
-  ["연도","50% cut","70% cut","증감(70%)","모집인원","경쟁률","충원순위"].forEach(h => {
+  ["연도","50% cut","70% cut","증감(70%)","모집인원","경쟁률","충원순위"].forEach(function(h){
     const th = document.createElement("th");
     th.textContent = h;
     headerRow.appendChild(th);
   });
   table.appendChild(headerRow);
 
-  YEARS.forEach((year, idx) => {
+  YEARS.forEach(function(year, idx){
     const tr = document.createElement("tr");
     if (year === 2025) tr.classList.add("highlight-2025");
 
     const row = rowsByYear[year];
     const prevYear = YEARS[idx+1];
-    const prevRow = rowsByYear[prevYear];
+    const prevRow = prevYear ? rowsByYear[prevYear] : null;
     const diff = createDiffText(row, prevRow);
 
     function val(key) {
@@ -790,10 +823,10 @@ function createTableBlock(rowsByYear) {
       val("충원순위")
     ];
 
-    cols.forEach((v, i) => {
+    cols.forEach(function(v, i){
       const td = document.createElement("td");
       if (i === 3 && v && v.diff) {
-        td.innerHTML = `<span class="${v.diff.cls}">${v.diff.html}</span>`;
+        td.innerHTML = '<span class="' + v.diff.cls + '">' + v.diff.html + '</span>';
       } else {
         td.textContent = v;
       }
@@ -806,26 +839,30 @@ function createTableBlock(rowsByYear) {
   return table;
 }
 
-/* 모바일 요약 */
+/* ===== 모바일 요약 ===== */
 function createMobileSummary(rowsByYear) {
   const box = document.createElement("div");
   box.className = "mobile-summary";
 
-  YEARS.forEach((year, idx) => {
+  YEARS.forEach(function(year, idx){
     const row = rowsByYear[year];
     const prevYear = YEARS[idx+1];
-    const prevRow = rowsByYear[prevYear];
+    const prevRow = prevYear ? rowsByYear[prevYear] : null;
     const diff = createDiffText(row, prevRow);
 
-    const v = row && row["70% cut"] !== "" && row["70% cut"] != null ? Number(row["70% cut"]) : null;
-    const text = (v !== null && !Number.isNaN(v)) ? `${v.toFixed(2)}등급` : "-";
+    let v = null;
+    if (row && row["70% cut"] !== "" && row["70% cut"] != null){
+      v = Number(row["70% cut"]);
+    }
+    const text = (v !== null && !Number.isNaN(v)) ? v.toFixed(2) + "등급" : "-";
 
     const r = document.createElement("div");
     r.className = "row";
-    r.innerHTML = `
-      <span>${year} · 70% cut</span>
-      <span>${text} <em style="font-style:normal; margin-left:6px;" class="${diff.cls}">${diff.html}</em></span>
-    `;
+    r.innerHTML =
+      '<span>' + year + ' · 70% cut</span>' +
+      '<span>' + text +
+      ' <em style="font-style:normal; margin-left:6px;" class="' + diff.cls + '">' +
+      diff.html + '</em></span>';
     box.appendChild(r);
   });
 
@@ -840,7 +877,7 @@ function createScoreTowerBlock(rowsByYear) {
   const wrap = document.createElement("div");
   wrap.className = "tower-wrap";
 
-  YEARS.forEach((year, idx) => {
+  YEARS.forEach(function(year, idx){
     const col = document.createElement("div");
     col.className = "tower";
 
@@ -853,7 +890,7 @@ function createScoreTowerBlock(rowsByYear) {
     pillar.className = "tower-pillar";
 
     const fill = document.createElement("div");
-    fill.className = `tower-fill tower-${year}`;
+    fill.className = "tower-fill tower-" + year;
 
     const spark = document.createElement("div");
     spark.className = "spark";
@@ -865,11 +902,12 @@ function createScoreTowerBlock(rowsByYear) {
       if (!Number.isNaN(n)) value = n;
     }
 
-    // 높이 매핑: 1등급(높음)~6등급(낮음)
+    // 높이 매핑: 1등급(높음)~6등급(낮음) 과장
     let height = 6;
     if (value !== null) {
       const norm = (6 - value) / 5;
-      const exaggerated = Math.pow(Math.max(0, Math.min(1, norm)), 1.22);
+      const clamped = Math.max(0, Math.min(1, norm));
+      const exaggerated = Math.pow(clamped, 1.22);
       height = 10 + exaggerated * 85;
     }
 
@@ -881,14 +919,21 @@ function createScoreTowerBlock(rowsByYear) {
       const prev = Number(rowsByYear[prevYear]["70% cut"]);
       if (!Number.isNaN(prev)) {
         const diff = prev - value; // 양수면 상승(더 빡셈)
-        if (diff > 0) { badgeText = `▲ +${diff.toFixed(2)}`; badgeClass = "badge-up"; }
-        else if (diff < 0) { badgeText = `▼ -${Math.abs(diff).toFixed(2)}`; badgeClass = "badge-down"; }
-        else { badgeText = `➖ 0.00`; badgeClass = "badge-same"; }
+        if (diff > 0) {
+          badgeText = "▲ +" + diff.toFixed(2);
+          badgeClass = "badge-up";
+        } else if (diff < 0) {
+          badgeText = "▼ -" + Math.abs(diff).toFixed(2);
+          badgeClass = "badge-down";
+        } else {
+          badgeText = "➖ 0.00";
+          badgeClass = "badge-same";
+        }
       }
     }
 
     const badge = document.createElement("div");
-    badge.className = `tower-badge ${badgeClass}`;
+    badge.className = "tower-badge " + badgeClass;
     if (badgeText) badge.textContent = badgeText;
 
     pillar.appendChild(fill);
@@ -899,19 +944,19 @@ function createScoreTowerBlock(rowsByYear) {
 
     const valueText = document.createElement("div");
     valueText.className = "tower-value";
-    valueText.textContent = value !== null ? value.toFixed(2) + "등급" : "데이터 없음";
+    valueText.textContent = (value !== null) ? value.toFixed(2) + "등급" : "데이터 없음";
     col.appendChild(valueText);
 
-    // 애니메이션 + 파티클 트리거 (연도별 약간 지연)
-    setTimeout(() => {
+    // 애니메이션 + 파티클 트리거
+    setTimeout(function(){
       fill.style.height = height + "%";
       spark.classList.add("on");
       if (badgeText) badge.classList.add("on");
       if (year === 2025) {
-        setTimeout(()=>spark.classList.add("on"), 180);
+        setTimeout(function(){ spark.classList.add("on"); }, 180);
       }
 
-      // 파티클 위치 계산 (캔버스 기준 좌표)
+      // 파티클 위치 계산 (뷰포트 기준)
       const rect = pillar.getBoundingClientRect();
       spawnParticles(
         rect.left + rect.width / 2,
@@ -926,19 +971,22 @@ function createScoreTowerBlock(rowsByYear) {
   return stage;
 }
 
-/* 결과 블록 */
-function createResultBlock(selection, rowsByYear, opts={}) {
-  const { compact=false } = opts;
+/* ===== 결과 블록 ===== */
+function createResultBlock(selection, rowsByYear, opts) {
   const container = document.createElement("div");
+  opts = opts || {};
+  const compact = !!opts.compact;
 
   const title = document.createElement("div");
   title.className = "result-title";
-  title.textContent = `${selection.univ} / ${selection.major}`;
+  title.textContent = selection.univ + " / " + selection.major;
   container.appendChild(title);
 
   const sub = document.createElement("div");
   sub.className = "result-sub";
-  sub.textContent = `[${selection.type}] ${selection.detail} · 3개년 70% cut 입결 상승 타워`;
+  sub.textContent =
+    "[" + selection.type + "] " + selection.detail +
+    " · 3개년 70% cut 입결 상승 타워";
   container.appendChild(sub);
 
   const header = document.createElement("div");
@@ -953,7 +1001,7 @@ function createResultBlock(selection, rowsByYear, opts={}) {
 
     const d = document.createElement("details");
     d.className = "fold";
-    d.innerHTML = `<summary>자세히 보기 (표 펼치기)</summary><div class="inner"></div>`;
+    d.innerHTML = '<summary>자세히 보기 (표 펼치기)</summary><div class="inner"></div>';
     d.querySelector(".inner").appendChild(createTableBlock(rowsByYear));
     container.appendChild(d);
   } else {
@@ -969,7 +1017,7 @@ function createResultBlock(selection, rowsByYear, opts={}) {
   return container;
 }
 
-/* 현재 선택 결과 렌더링 */
+/* ===== 현재 선택 결과 렌더링 ===== */
 function renderCurrentResult(selection) {
   currentResultBox.innerHTML = "";
   if (!selection) {
@@ -981,7 +1029,7 @@ function renderCurrentResult(selection) {
   }
 
   const rowsByYear = getRowsForSelection(selection);
-  const hasAny = YEARS.some(y => rowsByYear[y]);
+  const hasAny = YEARS.some(function(y){ return rowsByYear[y]; });
   if (!hasAny) {
     const p = document.createElement("p");
     p.className = "empty-text";
@@ -990,18 +1038,20 @@ function renderCurrentResult(selection) {
     return;
   }
 
-  currentResultBox.appendChild(createResultBlock(selection, rowsByYear, { compact: isMobile() }));
+  currentResultBox.appendChild(
+    createResultBlock(selection, rowsByYear, { compact: isMobile() })
+  );
 }
 
 /* ===== 비교 슬라이더 네비(●●● + 버튼) ===== */
 function buildCompareNav(total) {
   pageDots.innerHTML = "";
-  for (let i=0; i<total; i++) {
+  for (let i=0;i<total;i++){
     const dot = document.createElement("button");
     dot.type = "button";
-    dot.className = (i === currentSlideIndex) ? "active" : "";
-    dot.setAttribute("aria-label", `비교 ${i+1}번째`);
-    dot.addEventListener("click", () => goToSlide(i));
+    if (i === currentSlideIndex) dot.className = "active";
+    dot.setAttribute("aria-label", "비교 " + (i+1) + "번째");
+    dot.addEventListener("click", function(){ goToSlide(i); });
     pageDots.appendChild(dot);
   }
   prevBtn.disabled = (currentSlideIndex <= 0);
@@ -1015,41 +1065,42 @@ function getSliderEl() {
 function goToSlide(idx) {
   const slider = getSliderEl();
   const slides = slider ? slider.querySelectorAll(".compare-slide") : [];
-  if (!slider || slides.length === 0) return;
+  if (!slider || !slides.length) return;
 
   const clamped = Math.max(0, Math.min(slides.length-1, idx));
   currentSlideIndex = clamped;
 
-  // 해당 슬라이드 위치로 스크롤
   slides[clamped].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   buildCompareNav(slides.length);
 }
 
-prevBtn.addEventListener("click", () => goToSlide(currentSlideIndex - 1));
-nextBtn.addEventListener("click", () => goToSlide(currentSlideIndex + 1));
+prevBtn.addEventListener("click", function(){ goToSlide(currentSlideIndex - 1); });
+nextBtn.addEventListener("click", function(){ goToSlide(currentSlideIndex + 1); });
 
 function attachSliderScrollListener() {
   const slider = getSliderEl();
   if (!slider) return;
 
   let ticking = false;
-  slider.addEventListener("scroll", () => {
+  slider.addEventListener("scroll", function(){
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(() => {
+    requestAnimationFrame(function(){
       const slides = slider.querySelectorAll(".compare-slide");
       if (slides.length) {
-        // 가장 중앙에 가까운 slide 찾기
         const sliderRect = slider.getBoundingClientRect();
         const center = sliderRect.left + sliderRect.width / 2;
 
         let best = 0;
         let bestDist = Infinity;
-        slides.forEach((s, i) => {
+        slides.forEach(function(s, i){
           const r = s.getBoundingClientRect();
           const sCenter = r.left + r.width / 2;
           const dist = Math.abs(center - sCenter);
-          if (dist < bestDist) { bestDist = dist; best = i; }
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
         });
 
         if (best !== currentSlideIndex) {
@@ -1062,7 +1113,7 @@ function attachSliderScrollListener() {
   }, { passive:true });
 }
 
-/* 비교 목록 렌더링 */
+/* ===== 비교 목록 렌더링 ===== */
 function renderCompareList() {
   compareListBox.innerHTML = "";
   if (compareSelections.length === 0) {
@@ -1072,11 +1123,9 @@ function renderCompareList() {
   }
   compareEmptyText.style.display = "none";
 
-  // 슬라이더 여부 (모바일에서 2개 이상이면 기본 슬라이더 추천)
   const autoSlider = (isMobile() && compareSelections.length >= 2);
   const useSlider = compareSliderMode || autoSlider;
 
-  // 슬라이더 컨테이너
   let host;
   if (useSlider) {
     host = document.createElement("div");
@@ -1093,9 +1142,9 @@ function renderCompareList() {
     compareListBox.prepend(hint);
   }
 
-  compareSelections.forEach((sel, index) => {
+  compareSelections.forEach(function(sel, index){
     const rowsByYear = getRowsForSelection(sel);
-    const hasAny = YEARS.some(y => rowsByYear[y]);
+    const hasAny = YEARS.some(function(y){ return rowsByYear[y]; });
 
     const item = document.createElement("div");
     item.className = "compare-item";
@@ -1106,15 +1155,15 @@ function renderCompareList() {
     const left = document.createElement("div");
     left.className = "compare-label";
     left.innerHTML =
-      `<span class="compare-index-badge">${index+1}</span>` +
-      `${sel.univ} / ${sel.major}` +
-      `<br><small>[${sel.type}] ${sel.detail}</small>`;
+      '<span class="compare-index-badge">' + (index+1) + '</span>' +
+      sel.univ + " / " + sel.major +
+      '<br><small>[' + sel.type + '] ' + sel.detail + '</small>';
 
     const right = document.createElement("div");
     const btnDel = document.createElement("button");
     btnDel.className = "btn-mini";
     btnDel.textContent = "삭제";
-    btnDel.onclick = () => {
+    btnDel.onclick = function(){
       compareSelections.splice(index, 1);
       currentSlideIndex = 0;
       renderCompareList();
@@ -1144,21 +1193,19 @@ function renderCompareList() {
     }
   });
 
-  // 네비 표시 조건: 슬라이더 + 2개 이상
   if (useSlider && compareSelections.length >= 2) {
     compareNav.style.display = "flex";
     currentSlideIndex = Math.max(0, Math.min(currentSlideIndex, compareSelections.length - 1));
     buildCompareNav(compareSelections.length);
     attachSliderScrollListener();
-    // 처음에는 1번으로
-    setTimeout(() => goToSlide(currentSlideIndex), 80);
+    setTimeout(function(){ goToSlide(currentSlideIndex); }, 80);
   } else {
     compareNav.style.display = "none";
   }
 }
 
-/* 비교 추가 */
-addCompareBtn.addEventListener("click", () => {
+/* ===== 비교 추가 버튼 ===== */
+addCompareBtn.addEventListener("click", function(){
   const univ = univSelect.value;
   const major= majorSelect.value;
   const type = typeSelect.value;
@@ -1173,17 +1220,16 @@ addCompareBtn.addEventListener("click", () => {
     return;
   }
 
-  const exists = compareSelections.some(s =>
-    s.univ===univ && s.major===major && s.type===type && s.detail===detail
-  );
+  const exists = compareSelections.some(function(s){
+    return s.univ===univ && s.major===major && s.type===type && s.detail===detail;
+  });
   if (exists) {
     alert("이미 비교 목록에 있는 전형입니다.");
     return;
   }
 
-  compareSelections.push({ univ, major, type, detail });
+  compareSelections.push({ univ:univ, major:major, type:type, detail:detail });
 
-  // 모바일에서 2개 이상이면 자동 슬라이더로 보기 좋게
   if (isMobile() && compareSelections.length >= 2) {
     compareSliderMode = true;
   }
@@ -1192,8 +1238,8 @@ addCompareBtn.addEventListener("click", () => {
   renderCompareList();
 });
 
-/* 초기화 */
-resetBtn.addEventListener("click", () => {
+/* ===== 초기화 ===== */
+resetBtn.addEventListener("click", function(){
   univSelect.selectedIndex = 0;
   disableSelect(majorSelect, "모집단위 선택");
   disableSelect(typeSelect, "전형유형 선택");
@@ -1209,8 +1255,8 @@ resetBtn.addEventListener("click", () => {
   renderCompareList();
 });
 
-/* 슬라이드/세로 보기 토글 */
-toggleCompareViewBtn.addEventListener("click", () => {
+/* ===== 슬라이드/세로 보기 토글 ===== */
+toggleCompareViewBtn.addEventListener("click", function(){
   compareSliderMode = !compareSliderMode;
   currentSlideIndex = 0;
   syncCompareModeUI();
@@ -1222,23 +1268,18 @@ function syncCompareModeUI() {
   toggleCompareViewBtn.textContent = compareSliderMode ? "↕ 비교 세로 보기" : "↔ 비교 슬라이드 보기";
 }
 
-/* 반응형 변경 시 재렌더 */
-window.addEventListener("resize", () => {
+/* ===== 반응형 변경 시 재렌더 ===== */
+window.addEventListener("resize", function(){
   const univ = univSelect.value;
   const major= majorSelect.value;
   const type = typeSelect.value;
   const detail= detailSelect.value;
 
   if (univ && major && type && detail) {
-    renderCurrentResult({ univ, major, type, detail });
+    renderCurrentResult({ univ:univ, major:major, type:type, detail:detail });
   }
   renderCompareList();
 });
-
-/* 초기 실행 */
-loadData();
-renderCompareList();
-syncCompareModeUI();
 
 /* ===== 타워 파티클 ===== */
 const canvas = document.getElementById("towerParticles");
@@ -1255,7 +1296,8 @@ window.addEventListener("resize", resizeCanvas);
 function spawnParticles(x,y){
   for(let i=0;i<18;i++){
     particles.push({
-      x,y,
+      x:x,
+      y:y,
       vx:(Math.random()-0.5)*2.5,
       vy:-Math.random()*3,
       life:60
@@ -1265,12 +1307,12 @@ function spawnParticles(x,y){
 
 function animateParticles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles = particles.filter(p=>p.life-- > 0);
-  particles.forEach(p=>{
+  particles = particles.filter(function(p){ p.life--; return p.life > 0; });
+  particles.forEach(function(p){
     p.x+=p.vx;
     p.y+=p.vy;
     p.vy+=0.05;
-    ctx.fillStyle=`rgba(255,215,230,${p.life/60})`;
+    ctx.fillStyle="rgba(255,215,230,"+(p.life/60)+")";
     ctx.beginPath();
     ctx.arc(p.x,p.y,2,0,Math.PI*2);
     ctx.fill();
@@ -1278,6 +1320,11 @@ function animateParticles(){
   requestAnimationFrame(animateParticles);
 }
 animateParticles();
+
+/* ===== 초기 실행 ===== */
+loadData();
+renderCompareList();
+syncCompareModeUI();
 </script>
 
 </body>
