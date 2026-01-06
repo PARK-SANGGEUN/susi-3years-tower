@@ -2,481 +2,462 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>모두의 수시 3개년 입시결과 비교</title>
+<title>모두의 수시 3개년 입시결과 비교 TOWER</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
 * { box-sizing: border-box; }
 
-body {
-  margin: 0;
-  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+body{
+  margin:0;
+  font-family:"Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: linear-gradient(180deg, #ffe6d5 0%, #ffeef9 50%, #e9f6ff 100%);
-  color: #222;
+  color:#222;
+}
+.page{ max-width:1200px; margin:0 auto; padding:12px 10px 60px; }
+
+/* ===== 헤더 ===== */
+h1{ margin:6px 0 6px; font-size:28px; font-weight:900; letter-spacing:-0.2px; }
+.sub-title{ font-size:15px; font-weight:800; line-height:1.45; margin-bottom:4px; }
+.meta{ font-size:13px; font-weight:800; color:#333; }
+.meta-strong{
+  margin-top:6px;
+  font-size:14px;
+  font-weight:1000;
+  color:#111;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
 }
 
-.page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px 10px 60px;
+/* ===== 카드 ===== */
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:14px 16px;
+  margin-top:12px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.12);
+}
+.card-search{ box-shadow:0 14px 36px rgba(0,0,0,0.14); }
+.card-current{ border-top:6px solid #ff7a6d; }
+.card-compare{ border-top:6px solid #6b9bff; }
+
+.card-title{ font-size:15px; font-weight:1000; margin-bottom:8px; }
+
+/* ===== 검색 ===== */
+.search-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.search-row .field{ flex:1 1 0; min-width:120px; }
+
+select{
+  width:100%;
+  padding:11px 12px;
+  border-radius:14px;
+  border:2px solid #ffb28b;
+  font-size:15px;
+  font-weight:900;
+  background:#fffdfb;
 }
 
-/* 제목 영역 */
-h1 {
-  margin: 6px 0 4px;
-  font-size: 26px;
-  font-weight: 900;
+.btn-row{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-top:6px;
+  flex-wrap:wrap;
 }
-.sub-title {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 2px;
+.btn{
+  padding:10px 16px;
+  border-radius:14px;
+  border:none;
+  font-size:14px;
+  font-weight:1000;
+  cursor:pointer;
+  white-space:nowrap;
 }
-.meta {
-  font-size: 13px;
-  font-weight: 800;
+.btn-main{ background:linear-gradient(120deg,#ff7b61,#ff3d7a); color:#fff; }
+.btn-sub{ background:#fff; border:2px solid #eee; color:#444; }
+.btn-ghost{ background:#f7f9ff; border:2px solid #e8eeff; color:#2f4ecb; }
+
+@media (max-width:700px){
+  select{ font-size:17px; padding:14px; }
+  .btn{ font-size:16px; flex:1 1 0; }
 }
 
-/* 카드 공통 */
-.card {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 14px 16px;
-  margin-top: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-}
+/* ===== 결과 텍스트 ===== */
+.result-header{ font-size:14px; font-weight:900; margin-bottom:6px; }
+.result-title{ font-size:15px; font-weight:1000; }
+.result-sub{ font-size:13px; color:#555; margin-bottom:6px; }
 
-/* 검색 카드 */
-.card-search {
-  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-}
-
-/* 현재 선택 vs 비교 카드 */
-.card-current {
-  border-top: 6px solid #ff7a6d;
-}
-.card-compare {
-  border-top: 6px solid #6b9bff;
-}
-
-/* 카드 제목 */
-.card-title {
-  font-size: 15px;
-  font-weight: 900;
-  margin-bottom: 8px;
-}
-
-/* 검색 영역 4개 select + 버튼 */
-.search-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.search-row .field {
-  flex: 1 1 0;
-  min-width: 120px;
-}
-
-select {
-  width: 100%;
-  padding: 11px 12px;
-  border-radius: 14px;
-  border: 2px solid #ffb28b;
-  font-size: 15px;
-  font-weight: 800;
-  background: #fffdfb;
-}
-
-/* 버튼 */
-.btn-row {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: 6px;
-}
-.btn {
-  padding: 10px 16px;
-  border-radius: 14px;
-  border: none;
-  font-size: 14px;
-  font-weight: 900;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.btn-main {
-  background: linear-gradient(120deg,#ff7b61,#ff3d7a);
-  color: #fff;
-}
-.btn-sub {
-  background: #ffffff;
-  border: 2px solid #eeeeee;
-  color: #444;
-}
-.btn-ghost {
-  background: #f7f9ff;
-  border: 2px solid #e8eeff;
-  color: #2f4ecb;
-}
-
-/* 모바일에서 select / 버튼 크게 */
-@media (max-width: 700px) {
-  select {
-    font-size: 17px;
-    padding: 14px;
-  }
-  .btn {
-    font-size: 16px;
-    flex: 1 1 0;
-    justify-content: center;
-  }
-  .btn-row {
-    flex-wrap: wrap;
-  }
-}
-
-/* 결과 설명 */
-.result-header {
-  font-size: 14px;
-  font-weight: 800;
-  margin-bottom: 4px;
-}
-.result-title {
-  font-size: 15px;
-  font-weight: 900;
-}
-.result-sub {
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 6px;
-}
-
-/* =========================
-   SCORE TOWER (입결 상승 타워)
-========================= */
-.tower-stage {
-  position: relative;
-  border-radius: 18px;
-  padding: 14px 12px 12px;
+/* =========================================================
+   🔥 3D SCORE TOWER (화려/입체)
+========================================================= */
+.tower-stage{
+  position:relative;
+  border-radius:18px;
+  padding:14px 12px 12px;
   background: linear-gradient(180deg, #ffffff 0%, #fff7fb 45%, #f3fbff 100%);
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
-  overflow: hidden;
+  overflow:hidden;
 }
-
 .tower-stage::before{
   content:"";
   position:absolute;
-  inset:-40px -60px auto -60px;
-  height:120px;
-  background: radial-gradient(circle at 50% 50%, rgba(255,120,160,0.14), transparent 60%);
+  inset:-60px -60px auto -60px;
+  height:160px;
+  background: radial-gradient(circle at 50% 50%, rgba(255,120,160,0.16), transparent 60%);
   filter: blur(2px);
 }
-
-.tower-wrap {
-  display: flex;
-  gap: 18px;
-  justify-content: center;
-  align-items: flex-end;
-  margin: 10px 0 6px;
+.tower-wrap{
+  position:relative;
+  display:flex;
+  gap:18px;
+  justify-content:center;
+  align-items:flex-end;
+  margin:10px 0 6px;
 }
+@media (max-width:700px){ .tower-wrap{ gap:12px; } }
 
-@media (max-width: 700px) {
-  .tower-wrap { gap: 12px; }
+.tower{
+  width:98px;
+  text-align:center;
+  font-weight:1000;
+  position:relative;
 }
-
-.tower {
-  width: 92px;
-  text-align: center;
-  font-weight: 900;
-  position: relative;
-}
-
-.tower-year {
-  font-size: 13px;
-  margin-bottom: 6px;
-  opacity: .9;
-}
-
-.tower-pillar {
-  position: relative;
-  height: 210px;
-  border-radius: 16px;
+.tower-year{ font-size:13px; margin-bottom:6px; opacity:.95; }
+.tower-pillar{
+  position:relative;
+  height:220px;
+  border-radius:16px;
   background: linear-gradient(180deg,#f8f8f8,#e9e9e9);
-  box-shadow: inset 0 0 10px rgba(0,0,0,.12);
-  overflow: hidden;
+  box-shadow: inset 0 0 12px rgba(0,0,0,.18);
+  overflow:hidden;
 }
 
-@media (max-width: 700px) {
-  .tower-pillar { height: 160px; }
+/* “바닥 받침” */
+.tower-pillar::before{
+  content:"";
+  position:absolute;
+  left:-10px; right:-10px;
+  bottom:-10px;
+  height:22px;
+  border-radius:18px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.18), rgba(0,0,0,0.0) 70%);
+  filter: blur(2px);
+  opacity:.65;
 }
 
-.tower-fill {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 0%;
-  border-radius: 16px;
+/* 상단 캡 하이라이트 */
+.tower-pillar::after{
+  content:"";
+  position:absolute;
+  top:-7px;
+  left:8px; right:8px;
+  height:16px;
+  border-radius:999px;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.95), rgba(255,255,255,0.0) 65%);
+  filter: blur(1px);
+  opacity:.85;
+}
+
+@media (max-width:700px){ .tower-pillar{ height:160px; } }
+
+.tower-fill{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:0%;
+  border-radius:16px;
   transition: height 1s cubic-bezier(.2,.9,.25,1);
   transform: translateZ(0);
+  overflow:hidden;
 }
 
-/* shimmer overlay */
-.tower-fill::after{
+/* 3D 측면/하이라이트 */
+.tower-fill::before{
   content:"";
   position:absolute;
   inset:0;
-  background: linear-gradient(120deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.38) 35%, rgba(255,255,255,0.0) 70%);
-  transform: translateX(-140%);
-  animation: shimmer 1.2s ease-in-out 0.2s 1;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.35), rgba(0,0,0,0.06) 35%, rgba(0,0,0,0.0) 65%),
+    linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.0) 55%);
+  mix-blend-mode: overlay;
+  pointer-events:none;
 }
 
-@keyframes shimmer {
-  0%   { transform: translateX(-140%); opacity: .0; }
-  30%  { opacity: .9; }
-  100% { transform: translateX(140%); opacity: .0; }
+/* 글로시 스트라이프 */
+.tower-fill::after{
+  content:"";
+  position:absolute;
+  inset:-20px -60px;
+  background: linear-gradient(120deg, rgba(255,255,255,0.0) 20%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.0) 70%);
+  transform: translateX(-140%);
+  animation: shimmer 1.25s ease-in-out 0.15s 1;
+  pointer-events:none;
+}
+@keyframes shimmer{
+  0%{ transform: translateX(-140%); opacity:0; }
+  25%{ opacity:1; }
+  100%{ transform: translateX(140%); opacity:0; }
 }
 
 /* 연도별 컬러 */
-.tower-2023 { background: linear-gradient(180deg,#6aa8ff,#3f6cff); }
-.tower-2024 { background: linear-gradient(180deg,#ffce55,#ff9f1c); }
-.tower-2025 {
+.tower-2023{ background: linear-gradient(180deg,#6aa8ff,#3f6cff); }
+.tower-2024{ background: linear-gradient(180deg,#ffce55,#ff9f1c); }
+.tower-2025{
   background: linear-gradient(180deg,#ff6b6b,#ff2d2d);
   box-shadow: 0 0 18px rgba(255,70,70,.45);
+  animation: pulseGlow 2.6s ease-in-out infinite;
+}
+@keyframes pulseGlow{
+  0%{ box-shadow: 0 0 18px rgba(255,70,70,.45); }
+  50%{ box-shadow: 0 0 42px rgba(255,90,90,.95); }
+  100%{ box-shadow: 0 0 18px rgba(255,70,70,.45); }
 }
 
-/* 상단 sparkle */
-.spark {
+/* 반짝 스파클 */
+.spark{
   position:absolute;
-  top:-16px;
+  top:-18px;
   left:50%;
-  transform: translateX(-50%);
-  width: 54px;
-  height: 54px;
+  transform:translateX(-50%);
+  width:64px;
+  height:64px;
   background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.95), rgba(255,255,255,0.0) 65%);
-  opacity: 0;
+  opacity:0;
   pointer-events:none;
 }
-.spark.on {
-  animation: pop 0.9s ease-out 0.1s 1;
-}
-@keyframes pop {
-  0%   { transform: translateX(-50%) scale(.4); opacity: 0; }
-  35%  { transform: translateX(-50%) scale(1.1); opacity: .95; }
-  100% { transform: translateX(-50%) scale(1.6); opacity: 0; }
+.spark.on{ animation: pop 0.9s ease-out 0.1s 1; }
+@keyframes pop{
+  0%{ transform:translateX(-50%) scale(.35); opacity:0; }
+  35%{ transform:translateX(-50%) scale(1.05); opacity:.95; }
+  100%{ transform:translateX(-50%) scale(1.7); opacity:0; }
 }
 
-.tower-value {
-  margin-top: 7px;
-  font-size: 18px;
+/* 상승/하락 배지 */
+.tower-badge{
+  position:absolute;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:12px;
+  font-weight:1000;
+  padding:4px 10px;
+  border-radius:999px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  opacity:0;
+  user-select:none;
+}
+.tower-badge.on{ animation: badgeIn .8s ease-out .15s 1 forwards; }
+@keyframes badgeIn{
+  0%{ transform:translateX(-50%) translateY(6px) scale(.92); opacity:0; }
+  60%{ opacity:1; }
+  100%{ transform:translateX(-50%) translateY(0) scale(1); opacity:1; }
+}
+.badge-up{ background: linear-gradient(120deg,#ff4d4d,#ff2da0); color:#fff; }
+.badge-down{ background: linear-gradient(120deg,#3f6cff,#26c6ff); color:#fff; }
+.badge-same{ background: #f3f3f3; color:#333; border:1px solid #e8e8e8; }
+
+.tower-value{ margin-top:7px; font-size:18px; font-weight:1000; }
+
+@media (max-width:700px){
+  .tower-pillar{ height:160px; }
+  .tower{ width:30%; min-width:86px; }
 }
 
-/* 상승 라벨 (연결 화살표 느낌) */
-.tower-badge {
-  position: absolute;
-  top: 34px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  background: #ff4d4d;
-  color: #fff;
-  padding: 3px 9px;
-  border-radius: 999px;
-  box-shadow: 0 8px 18px rgba(255,77,77,.24);
-  opacity: 0;
+/* ===== 테이블 ===== */
+table.result-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  font-size:14px;
 }
-.tower-badge.on {
-  animation: badgeIn .8s ease-out .15s 1 forwards;
+table.result-table th, table.result-table td{
+  text-align:center;
+  padding:7px 4px;
+  border-bottom:1px solid #eee;
+  border-right:1px solid #eee;
 }
-@keyframes badgeIn {
-  0% { transform: translateX(-50%) translateY(6px) scale(.92); opacity: 0; }
-  60%{ opacity: 1; }
-  100%{ transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
-}
+table.result-table th:last-child, table.result-table td:last-child{ border-right:none; }
+table.result-table th{ background:#fff3eb; font-weight:1000; }
+table.result-table tr.highlight-2025{ background:#fff8d7; font-weight:1000; font-size:15px; }
 
-/* =========================
-   TABLE
-========================= */
-table.result-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 14px;
-}
-table.result-table th,
-table.result-table td {
-  text-align: center;
-  padding: 7px 4px;
-  border-bottom: 1px solid #eeeeee;
-  border-right: 1px solid #eeeeee;
-}
-table.result-table th:last-child,
-table.result-table td:last-child {
-  border-right: none;
-}
-table.result-table th {
-  background: #fff3eb;
-  font-weight: 900;
-}
-table.result-table tr.highlight-2025 {
-  background: #fff8d7;
-  font-weight: 900;
-  font-size: 15px;
-}
+.diff-up{ color:#e53935; font-weight:1000; }
+.diff-down{ color:#1e88e5; font-weight:1000; }
+.diff-same{ color:#555; }
 
-/* 증감 텍스트 */
-.diff-up { color: #e53935; font-weight: 900; }
-.diff-down { color: #1e88e5; font-weight: 900; }
-.diff-same { color: #555; }
-
-/* 비교 카드 내부 */
-.compare-controls {
+/* ===== 비교 카드 내부 ===== */
+.compare-controls{
   display:flex;
   gap:8px;
   align-items:center;
   justify-content: space-between;
   margin-bottom: 6px;
-  flex-wrap: wrap;
+  flex-wrap:wrap;
 }
-.pill {
-  font-size: 12px;
-  font-weight: 900;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f1f5ff;
-  color: #2f4ecb;
-  border: 1px solid #e3ebff;
+.pill{
+  font-size:12px;
+  font-weight:1000;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#f1f5ff;
+  color:#2f4ecb;
+  border:1px solid #e3ebff;
 }
-.compare-item {
-  margin-top: 8px;
-  padding: 10px 10px 12px;
-  border-radius: 14px;
-  border: 2px dashed #dde5ff;
-  background: #ffffff;
+.compare-item{
+  margin-top:8px;
+  padding:10px 10px 12px;
+  border-radius:14px;
+  border:2px dashed #dde5ff;
+  background:#fff;
 }
-.compare-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  gap: 8px;
+.compare-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+  gap:8px;
 }
-.compare-label {
-  font-size: 13px;
-  font-weight: 900;
+.compare-label{
+  font-size:13px;
+  font-weight:1000;
 }
-.compare-label small {
-  font-size: 11px;
-  color: #777;
+.compare-label small{ font-size:11px; color:#777; }
+.compare-index-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  border-radius:999px;
+  background:#6b9bff;
+  color:#fff;
+  font-size:11px;
+  margin-right:6px;
 }
-.compare-index-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #6b9bff;
-  color: #fff;
-  font-size: 11px;
-  margin-right: 6px;
-}
-.btn-mini {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: none;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-  background: #f7f7ff;
+.btn-mini{
+  padding:6px 10px;
+  border-radius:999px;
+  border:none;
+  font-size:12px;
+  font-weight:1000;
+  cursor:pointer;
+  background:#f7f7ff;
 }
 
-/* 빈 상태 안내 */
-.empty-text {
-  font-size: 13px;
-  color: #555;
-}
-
-/* =========================
-   COMPARE SLIDER MODE
-========================= */
-.compare-slider {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 6px 2px 10px;
+/* ===== 비교 슬라이더 ===== */
+.compare-slider{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding:6px 2px 10px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
-.compare-slider::-webkit-scrollbar { height: 10px; }
-.compare-slider::-webkit-scrollbar-thumb {
+.compare-slider::-webkit-scrollbar{ height:10px; }
+.compare-slider::-webkit-scrollbar-thumb{
   background: rgba(70,110,255,0.18);
-  border-radius: 999px;
+  border-radius:999px;
 }
-.compare-slide {
+.compare-slide{
   scroll-snap-align: center;
   flex: 0 0 380px;
   max-width: 380px;
 }
-@media (max-width: 700px) {
-  .compare-slide {
-    flex: 0 0 88%;
-    max-width: 88%;
-  }
+@media (max-width:700px){
+  .compare-slide{ flex:0 0 88%; max-width:88%; }
 }
 
-/* 모바일 요약 카드 */
-.mobile-summary {
-  display: none;
-  margin-top: 10px;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #eef1ff;
-}
-.mobile-summary .row {
+/* ===== 페이지 인디케이터 + 버튼 ===== */
+.compare-nav{
   display:flex;
-  justify-content: space-between;
-  padding: 10px 12px;
-  background: #fbfcff;
-  border-bottom: 1px solid #eef1ff;
-  font-weight: 900;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin: 6px 0 2px;
 }
-.mobile-summary .row:last-child { border-bottom: none; }
-.mobile-summary .row span:first-child { color:#334; font-size: 13px; }
-.mobile-summary .row span:last-child { color:#111; font-size: 13px; }
-@media (max-width: 700px) {
-  .mobile-only { display: block !important; }
-  .desktop-only { display: none !important; }
-  .mobile-summary { display: block; }
+.nav-btn{
+  border:none;
+  background:#fff;
+  font-size:18px;
+  padding:7px 12px;
+  border-radius:999px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.14);
+  cursor:pointer;
+  user-select:none;
+}
+.nav-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.page-dots{ display:flex; gap:7px; align-items:center; }
+.page-dots button{
+  width:9px; height:9px;
+  border-radius:999px;
+  border:none;
+  padding:0;
+  background:#cfcfcf;
+  cursor:pointer;
+}
+.page-dots button.active{ background:#ff3d7a; }
+
+/* ===== 모바일 요약 카드 ===== */
+.mobile-summary{
+  display:none;
+  margin-top:10px;
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid #eef1ff;
+}
+.mobile-summary .row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 12px;
+  background:#fbfcff;
+  border-bottom:1px solid #eef1ff;
+  font-weight:1000;
+}
+.mobile-summary .row:last-child{ border-bottom:none; }
+.mobile-summary .row span:first-child{ color:#334; font-size:13px; }
+.mobile-summary .row span:last-child{ color:#111; font-size:13px; }
+
+details.fold{
+  margin-top:10px;
+  border:1px solid #f0f0f0;
+  border-radius:14px;
+  overflow:hidden;
+}
+details.fold summary{
+  cursor:pointer;
+  list-style:none;
+  padding:10px 12px;
+  font-weight:1000;
+  background:#fff7fb;
+}
+details.fold summary::-webkit-details-marker{ display:none; }
+details.fold .inner{ padding:10px 12px 12px; background:#fff; }
+
+@media (max-width:700px){
+  .mobile-summary{ display:block; }
 }
 
-/* 접기/펼치기 */
-details.fold {
-  margin-top: 10px;
-  border: 1px solid #f0f0f0;
-  border-radius: 14px;
-  overflow: hidden;
-}
-details.fold summary {
-  cursor: pointer;
-  list-style: none;
-  padding: 10px 12px;
-  font-weight: 900;
-  background: #fff7fb;
-}
-details.fold summary::-webkit-details-marker { display: none; }
-details.fold .inner {
-  padding: 10px 12px 12px;
-  background: #ffffff;
-}
+/* 빈 상태 */
+.empty-text{ font-size:13px; color:#555; }
 </style>
 </head>
 
 <body>
 <div class="page">
-  <h1>모두의 수시 3개년 입시결과 비교</h1>
-  <div class="sub-title">대학 · 모집단위 · 전형유형 · 세부전형을 선택하여 3개년 70% cut을 한눈에 비교하세요.</div>
-  <div class="meta">Copyright @All Teachers</div>
+  <h1>모두의 수시 3개년 입시결과 비교 TOWER</h1>
+  <div class="sub-title">
+    선택한 전형의 <b>최근 3개년 70% cut 입결 흐름</b>을<br>
+    <b>입체적인 상승 타워</b>로 한눈에 확인하세요.
+  </div>
+  <div class="meta meta-strong">Copyright @All Teachers</div>
   <div class="meta">출처: 3개년 어디가 수시 입시결과</div>
 
   <!-- 검색 카드 -->
@@ -528,6 +509,14 @@ details.fold .inner {
       <div class="card-title" style="margin:0;">선택 비교 목록 (최대 3개까지 누적)</div>
       <div class="pill" id="compareModePill">세로 모드</div>
     </div>
+
+    <!-- 슬라이더 네비(●●● + 버튼) -->
+    <div class="compare-nav" id="compareNav" style="display:none;">
+      <button class="nav-btn" id="prevBtn" aria-label="이전">◀</button>
+      <div class="page-dots" id="pageDots" aria-label="페이지 인디케이터"></div>
+      <button class="nav-btn" id="nextBtn" aria-label="다음">▶</button>
+    </div>
+
     <div class="empty-text" id="compareEmpty">비교 목록이 비어 있습니다. '비교 추가' 버튼을 눌러 전형을 누적하세요.</div>
     <div id="compareList"></div>
   </div>
@@ -552,6 +541,13 @@ const compareModePill = document.getElementById("compareModePill");
 const currentResultBox = document.getElementById("currentResult");
 const compareListBox   = document.getElementById("compareList");
 const compareEmptyText = document.getElementById("compareEmpty");
+
+const compareNav = document.getElementById("compareNav");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const pageDots = document.getElementById("pageDots");
+
+let currentSlideIndex = 0;
 
 /* 유틸 */
 function extractYear(value) {
@@ -676,9 +672,7 @@ detailSelect.addEventListener("change", () => {
   addCompareBtn.disabled = !valid;
 
   if (!valid) return renderCurrentResult(null);
-
-  const selection = { univ, major, type, detail };
-  renderCurrentResult(selection);
+  renderCurrentResult({ univ, major, type, detail });
 });
 
 /* 선택된 전형의 3개년 row 가져오기 */
@@ -707,7 +701,7 @@ function createDiffText(currentRow, prevRow) {
   return { html: "➖ 동일", cls: "diff-same" };
 }
 
-/* 테이블 (PC 기본: 기존 풀 테이블) */
+/* 테이블 블록 */
 function createTableBlock(rowsByYear) {
   const table = document.createElement("table");
   table.className = "result-table";
@@ -760,7 +754,7 @@ function createTableBlock(rowsByYear) {
   return table;
 }
 
-/* 모바일 요약 카드 (70% cut 중심) */
+/* 모바일 요약 */
 function createMobileSummary(rowsByYear) {
   const box = document.createElement("div");
   box.className = "mobile-summary";
@@ -786,7 +780,7 @@ function createMobileSummary(rowsByYear) {
   return box;
 }
 
-/* ======= 입결 상승 타워 (온도계 완전 교체) ======= */
+/* ======= 3D 입결 상승 타워 ======= */
 function createScoreTowerBlock(rowsByYear) {
   const stage = document.createElement("div");
   stage.className = "tower-stage";
@@ -819,29 +813,30 @@ function createScoreTowerBlock(rowsByYear) {
       if (!Number.isNaN(n)) value = n;
     }
 
-    // 높이 매핑 (등급 낮을수록 높게)
+    // 높이 매핑: 1등급(높음)~6등급(낮음)
     let height = 6;
     if (value !== null) {
-      const norm = (6 - value) / 5;  // 1등급->1, 6등급->0
-      const exaggerated = Math.pow(Math.max(0, Math.min(1, norm)), 1.25);
+      const norm = (6 - value) / 5;
+      const exaggerated = Math.pow(Math.max(0, Math.min(1, norm)), 1.22);
       height = 10 + exaggerated * 85;
     }
 
-    // 상승 배지 (이전년도 대비)
+    // 배지 텍스트 (이전년도 대비)
     const prevYear = YEARS[idx + 1];
     let badgeText = "";
+    let badgeClass = "badge-same";
     if (prevYear && rowsByYear[prevYear] && value !== null) {
       const prev = Number(rowsByYear[prevYear]["70% cut"]);
       if (!Number.isNaN(prev)) {
-        const diff = prev - value; // 이전 - 현재 (양수면 상승)
-        if (diff > 0) badgeText = `▲ +${diff.toFixed(2)}`;
-        else if (diff < 0) badgeText = `▼ -${Math.abs(diff).toFixed(2)}`;
-        else badgeText = `➖ 0.00`;
+        const diff = prev - value; // 양수면 상승(더 빡셈)
+        if (diff > 0) { badgeText = `▲ +${diff.toFixed(2)}`; badgeClass = "badge-up"; }
+        else if (diff < 0) { badgeText = `▼ -${Math.abs(diff).toFixed(2)}`; badgeClass = "badge-down"; }
+        else { badgeText = `➖ 0.00`; badgeClass = "badge-same"; }
       }
     }
 
     const badge = document.createElement("div");
-    badge.className = "tower-badge";
+    badge.className = `tower-badge ${badgeClass}`;
     if (badgeText) badge.textContent = badgeText;
 
     pillar.appendChild(fill);
@@ -855,16 +850,13 @@ function createScoreTowerBlock(rowsByYear) {
     valueText.textContent = value !== null ? value.toFixed(2) + "등급" : "데이터 없음";
     col.appendChild(valueText);
 
-    // 애니메이션 트리거
+    // 애니메이션 트리거 (연도별 약간 지연)
     setTimeout(() => {
       fill.style.height = height + "%";
-      // 반짝임(특히 2025 강조)
       spark.classList.add("on");
       if (badgeText) badge.classList.add("on");
-      if (year === 2025) {
-        setTimeout(()=>spark.classList.add("on"), 180);
-      }
-    }, 80 + (idx * 90));
+      if (year === 2025) setTimeout(()=>spark.classList.add("on"), 180);
+    }, 120 + (idx * 90));
 
     wrap.appendChild(col);
   });
@@ -895,16 +887,12 @@ function createResultBlock(selection, rowsByYear, opts={}) {
 
   container.appendChild(createScoreTowerBlock(rowsByYear));
 
-  // 모바일 요약 카드 + (원하면 펼쳐서 상세 테이블)
   if (compact) {
     container.appendChild(createMobileSummary(rowsByYear));
 
     const d = document.createElement("details");
     d.className = "fold";
-    d.innerHTML = `
-      <summary>자세히 보기 (표 펼치기)</summary>
-      <div class="inner"></div>
-    `;
+    d.innerHTML = `<summary>자세히 보기 (표 펼치기)</summary><div class="inner"></div>`;
     d.querySelector(".inner").appendChild(createTableBlock(rowsByYear));
     container.appendChild(d);
   } else {
@@ -944,19 +932,92 @@ function renderCurrentResult(selection) {
   currentResultBox.appendChild(createResultBlock(selection, rowsByYear, { compact: isMobile() }));
 }
 
+/* ===== 비교 슬라이더 네비(●●● + 버튼) ===== */
+function buildCompareNav(total) {
+  pageDots.innerHTML = "";
+  for (let i=0; i<total; i++) {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = (i === currentSlideIndex) ? "active" : "";
+    dot.setAttribute("aria-label", `비교 ${i+1}번째`);
+    dot.addEventListener("click", () => goToSlide(i));
+    pageDots.appendChild(dot);
+  }
+  prevBtn.disabled = (currentSlideIndex <= 0);
+  nextBtn.disabled = (currentSlideIndex >= total-1);
+}
+
+function getSliderEl() {
+  return compareListBox.querySelector(".compare-slider");
+}
+
+function goToSlide(idx) {
+  const slider = getSliderEl();
+  const slides = slider ? slider.querySelectorAll(".compare-slide") : [];
+  if (!slider || slides.length === 0) return;
+
+  const clamped = Math.max(0, Math.min(slides.length-1, idx));
+  currentSlideIndex = clamped;
+
+  // 해당 슬라이드 위치로 스크롤
+  slides[clamped].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  buildCompareNav(slides.length);
+}
+
+prevBtn.addEventListener("click", () => goToSlide(currentSlideIndex - 1));
+nextBtn.addEventListener("click", () => goToSlide(currentSlideIndex + 1));
+
+function attachSliderScrollListener() {
+  const slider = getSliderEl();
+  if (!slider) return;
+
+  let ticking = false;
+  slider.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const slides = slider.querySelectorAll(".compare-slide");
+      if (slides.length) {
+        // 가장 중앙에 가까운 slide 찾기
+        const sliderRect = slider.getBoundingClientRect();
+        const center = sliderRect.left + sliderRect.width / 2;
+
+        let best = 0;
+        let bestDist = Infinity;
+        slides.forEach((s, i) => {
+          const r = s.getBoundingClientRect();
+          const sCenter = r.left + r.width / 2;
+          const dist = Math.abs(center - sCenter);
+          if (dist < bestDist) { bestDist = dist; best = i; }
+        });
+
+        if (best !== currentSlideIndex) {
+          currentSlideIndex = best;
+          buildCompareNav(slides.length);
+        }
+      }
+      ticking = false;
+    });
+  }, { passive:true });
+}
+
 /* 비교 목록 렌더링 */
 function renderCompareList() {
   compareListBox.innerHTML = "";
-
   if (compareSelections.length === 0) {
     compareEmptyText.style.display = "block";
+    compareNav.style.display = "none";
     return;
   }
   compareEmptyText.style.display = "none";
 
-  // 슬라이더 컨테이너 (모드에 따라)
+  // 슬라이더 여부 (모바일에서 2개 이상이면 기본 슬라이더 추천)
+  const autoSlider = (isMobile() && compareSelections.length >= 2);
+  const useSlider = compareSliderMode || autoSlider;
+
+  // 슬라이더 컨테이너
   let host;
-  if (compareSliderMode) {
+  if (useSlider) {
     host = document.createElement("div");
     host.className = "compare-slider";
     compareListBox.appendChild(host);
@@ -987,6 +1048,7 @@ function renderCompareList() {
     btnDel.textContent = "삭제";
     btnDel.onclick = () => {
       compareSelections.splice(index, 1);
+      currentSlideIndex = 0;
       renderCompareList();
     };
     right.appendChild(btnDel);
@@ -1004,7 +1066,7 @@ function renderCompareList() {
       item.appendChild(createResultBlock(sel, rowsByYear, { compact: isMobile() }));
     }
 
-    if (compareSliderMode) {
+    if (useSlider) {
       const slide = document.createElement("div");
       slide.className = "compare-slide";
       slide.appendChild(item);
@@ -1014,16 +1076,20 @@ function renderCompareList() {
     }
   });
 
-  // 슬라이더 모드일 때, 가운데로 살짝 맞춰주기
-  if (compareSliderMode) {
-    setTimeout(() => {
-      const slider = compareListBox.querySelector(".compare-slider");
-      if (slider) slider.scrollLeft = 0;
-    }, 60);
+  // 네비 표시 조건: 슬라이더 + 2개 이상
+  if (useSlider && compareSelections.length >= 2) {
+    compareNav.style.display = "flex";
+    currentSlideIndex = Math.max(0, Math.min(currentSlideIndex, compareSelections.length - 1));
+    buildCompareNav(compareSelections.length);
+    attachSliderScrollListener();
+    // 처음에는 1번으로
+    setTimeout(() => goToSlide(currentSlideIndex), 80);
+  } else {
+    compareNav.style.display = "none";
   }
 }
 
-/* 비교 추가 버튼 */
+/* 비교 추가 */
 addCompareBtn.addEventListener("click", () => {
   const univ = univSelect.value;
   const major= majorSelect.value;
@@ -1039,7 +1105,6 @@ addCompareBtn.addEventListener("click", () => {
     return;
   }
 
-  // 중복 방지
   const exists = compareSelections.some(s =>
     s.univ===univ && s.major===major && s.type===type && s.detail===detail
   );
@@ -1048,33 +1113,38 @@ addCompareBtn.addEventListener("click", () => {
     return;
   }
 
-  const sel = { univ, major, type, detail };
-  compareSelections.push(sel);
+  compareSelections.push({ univ, major, type, detail });
 
-  // 2개 이상부터는 자동으로 슬라이더가 더 보기 좋아서(특히 모바일)
-  if (compareSelections.length >= 2 && isMobile()) compareSliderMode = true;
-
+  // 모바일에서 2개 이상이면 자동 슬라이더로 보기 좋게
+  if (isMobile() && compareSelections.length >= 2) {
+    compareSliderMode = true;
+  }
   syncCompareModeUI();
+  currentSlideIndex = 0;
   renderCompareList();
 });
 
-/* 초기화 버튼 */
+/* 초기화 */
 resetBtn.addEventListener("click", () => {
   univSelect.selectedIndex = 0;
   disableSelect(majorSelect, "모집단위 선택");
   disableSelect(typeSelect, "전형유형 선택");
   disableSelect(detailSelect, "세부전형 선택");
   addCompareBtn.disabled = true;
+
   compareSelections = [];
   compareSliderMode = false;
+  currentSlideIndex = 0;
+
   syncCompareModeUI();
   renderCurrentResult(null);
   renderCompareList();
 });
 
-/* 비교 보기 토글 */
+/* 슬라이드/세로 보기 토글 */
 toggleCompareViewBtn.addEventListener("click", () => {
   compareSliderMode = !compareSliderMode;
+  currentSlideIndex = 0;
   syncCompareModeUI();
   renderCompareList();
 });
@@ -1084,15 +1154,15 @@ function syncCompareModeUI() {
   toggleCompareViewBtn.textContent = compareSliderMode ? "↕ 비교 세로 보기" : "↔ 비교 슬라이드 보기";
 }
 
-/* 반응형 변경 시(회전 등) 다시 렌더 */
+/* 반응형 변경 시 재렌더 */
 window.addEventListener("resize", () => {
-  // 현재 선택 다시 그림(모바일 요약/상세 자동 전환)
   const univ = univSelect.value;
   const major= majorSelect.value;
   const type = typeSelect.value;
   const detail= detailSelect.value;
+
   if (univ && major && type && detail) {
-    renderCurrentResult({univ, major, type, detail});
+    renderCurrentResult({ univ, major, type, detail });
   }
   renderCompareList();
 });
