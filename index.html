@@ -16,6 +16,14 @@ body{
 }
 .page{ max-width:1200px; margin:0 auto; padding:12px 10px 60px; }
 
+/* 캔버스 파티클 배경 */
+#towerParticles{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+}
+
 /* ===== 헤더 ===== */
 h1{ margin:6px 0 6px; font-size:28px; font-weight:900; letter-spacing:-0.2px; }
 .sub-title{ font-size:15px; font-weight:800; line-height:1.45; margin-bottom:4px; }
@@ -447,23 +455,13 @@ details.fold .inner{ padding:10px 12px 12px; background:#fff; }
 
 /* 빈 상태 */
 .empty-text{ font-size:13px; color:#555; }
-  /* ===== 타워 입체감 추가 강화 ===== */
+
+/* ===== 타워 입체감 추가 강화 ===== */
 .tower-pillar{
   perspective: 800px;
 }
 .tower-fill{
   transform-style: preserve-3d;
-}
-
-/* 측면 그림자 (타워 두께감) */
-.tower-fill::after{
-  content:"";
-  position:absolute;
-  top:0;
-  right:-10px;
-  width:10px;
-  height:100%;
-  background: linear-gradient(90deg, rgba(0,0,0,.25), rgba(0,0,0,0));
 }
 
 /* 층 구분 라인 (건물 느낌 핵심) */
@@ -503,6 +501,8 @@ details.fold .inner{ padding:10px 12px 12px; background:#fff; }
 </head>
 
 <body>
+<canvas id="towerParticles"></canvas>
+
 <div class="page">
   <h1>모두의 수시 3개년 입시결과 비교 TOWER</h1>
   <div class="sub-title">
@@ -702,7 +702,7 @@ majorSelect.addEventListener("change", () => {
 
 typeSelect.addEventListener("change", () => {
   const univ = univSelect.value;
-  const major= majorSelect.value;
+  const major = majorSelect.value;
   const type = typeSelect.value;
   disableSelect(detailSelect, "세부전형 선택");
   addCompareBtn.disabled = true;
@@ -902,19 +902,22 @@ function createScoreTowerBlock(rowsByYear) {
     valueText.textContent = value !== null ? value.toFixed(2) + "등급" : "데이터 없음";
     col.appendChild(valueText);
 
-    // 애니메이션 트리거 (연도별 약간 지연)
+    // 애니메이션 + 파티클 트리거 (연도별 약간 지연)
     setTimeout(() => {
       fill.style.height = height + "%";
       spark.classList.add("on");
       if (badgeText) badge.classList.add("on");
-      if (year === 2025) setTimeout(()=>spark.classList.add("on"), 180);
+      if (year === 2025) {
+        setTimeout(()=>spark.classList.add("on"), 180);
+      }
+
+      // 파티클 위치 계산 (캔버스 기준 좌표)
+      const rect = pillar.getBoundingClientRect();
+      spawnParticles(
+        rect.left + rect.width / 2,
+        rect.top + 10
+      );
     }, 120 + (idx * 90));
-// 파티클 위치 계산
-const rect = pillar.getBoundingClientRect();
-spawnParticles(
-  rect.left + rect.width / 2,
-  rect.top + 10
-);
 
     wrap.appendChild(col);
   });
@@ -1082,12 +1085,13 @@ function renderCompareList() {
   } else {
     host = compareListBox;
   }
-if (useSlider && compareSelections.length >= 2) {
-  const hint = document.createElement("div");
-  hint.className = "swipe-hint";
-  hint.textContent = "← 좌우로 밀어 비교하세요 →";
-  compareListBox.prepend(hint);
-}
+
+  if (useSlider && compareSelections.length >= 2) {
+    const hint = document.createElement("div");
+    hint.className = "swipe-hint";
+    hint.textContent = "← 좌우로 밀어 비교하세요 →";
+    compareListBox.prepend(hint);
+  }
 
   compareSelections.forEach((sel, index) => {
     const rowsByYear = getRowsForSelection(sel);
@@ -1235,7 +1239,8 @@ window.addEventListener("resize", () => {
 loadData();
 renderCompareList();
 syncCompareModeUI();
-  /* ===== 타워 파티클 ===== */
+
+/* ===== 타워 파티클 ===== */
 const canvas = document.getElementById("towerParticles");
 const ctx = canvas.getContext("2d");
 let particles = [];
@@ -1273,10 +1278,7 @@ function animateParticles(){
   requestAnimationFrame(animateParticles);
 }
 animateParticles();
-
 </script>
-  <canvas id="towerParticles"></canvas>
 
 </body>
 </html>
-
